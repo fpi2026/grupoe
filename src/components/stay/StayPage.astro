@@ -1,0 +1,128 @@
+---
+/** Página de Alojamiento completa (Alojamiento.dc.html); la usan /alojamiento/ y /en/stay/. */
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BookingWhatsApp from '../BookingWhatsApp.astro';
+import nocheCabana from '../../assets/img/noche-cabana-2.jpg';
+import diaCabanas from '../../assets/img/dia-cabanas-2.jpg';
+import panCabana from '../../assets/img/pan-cabana.jpg';
+import { alojamiento } from '../../data/alojamiento';
+import type { Lang } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/utils';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const c = alojamiento[lang];
+const h2 = 'm-0 font-serif text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-normal';
+---
+
+<BaseLayout lang={lang} route="alojamiento" title={c.meta.title} description={c.meta.description}>
+	<section class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-end gap-x-16 gap-y-6 pt-[clamp(56px,8vw,112px)] pb-[clamp(32px,4vw,56px)]">
+		<div class="flex flex-col gap-3.5">
+			<span class="eyebrow text-amber-ink">{c.intro.eyebrow}</span>
+			<h1 class="m-0 font-serif text-h1 font-normal tracking-[-.02em]">
+				{c.intro.titleA} <em>{c.intro.titleB}</em>
+			</h1>
+		</div>
+		<p class="m-0 max-w-[520px] text-pretty text-muted">{c.intro.lead}</p>
+	</section>
+
+	<section aria-labelledby="ca-t" class="container-site pb-[clamp(64px,8vw,120px)]">
+		<div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-3">
+			<Image
+				src={nocheCabana}
+				alt={c.cabins.photos[0]!}
+				widths={[480, 720, 960]}
+				sizes="(min-width: 900px) 33vw, 100vw"
+				loading="eager"
+				class="row-span-2 size-full min-h-[340px] rounded-lg object-cover"
+			/>
+			<Image src={diaCabanas} alt={c.cabins.photos[1]!} widths={[480, 720, 960]} sizes="(min-width: 900px) 33vw, 100vw" class="aspect-[4/3] w-full rounded-lg object-cover" />
+			<Image src={panCabana} alt={c.cabins.photos[2]!} widths={[480, 720, 960]} sizes="(min-width: 900px) 33vw, 100vw" class="aspect-[4/3] w-full rounded-lg object-cover" />
+		</div>
+		<div class="mt-[clamp(32px,4vw,56px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-x-16 gap-y-8">
+			<div class="flex flex-col gap-3">
+				<h2 id="ca-t" class={h2}>{c.cabins.title}</h2>
+				<p class="m-0 max-w-[480px] text-muted">{c.cabins.text}</p>
+				<p class="mt-2 mb-0 font-serif text-[30px]">
+					{c.cabins.rate} <span class="font-sans text-[15px] text-muted">{c.cabins.rateNote}</span>
+				</p>
+				<a
+					href="#reserva"
+					class="mt-2 inline-flex h-[50px] items-center gap-3.5 self-start rounded-sm bg-btn px-[22px] font-semibold text-btn-ink no-underline hover:text-btn-ink hover:brightness-110"
+				>
+					<span>{c.cabins.book}</span><span aria-hidden="true">→</span>
+				</a>
+			</div>
+			<dl class="m-0 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-x-8">
+				{
+					c.cabins.specs.map((s) => (
+						<div class="border-t border-line pt-3.5 pb-[18px]">
+							<dt class="text-[13px] text-muted">{s.k}</dt>
+							<dd class="mt-1 mb-0 text-lg font-medium">{s.v}</dd>
+						</div>
+					))
+				}
+			</dl>
+		</div>
+	</section>
+
+	<section aria-labelledby="hh-t" class="bg-surface transition-[background] duration-[.6s]">
+		<div class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-center gap-[clamp(32px,5vw,72px)] py-[clamp(64px,8vw,120px)]">
+			<div class="flex aspect-[4/3] items-center justify-center rounded-lg border border-dashed border-line bg-bg p-6 text-center text-sm text-muted">
+				{c.lodge.photoPending}
+			</div>
+			<div class="flex flex-col gap-4">
+				<span class="eyebrow text-amber-ink">{c.lodge.eyebrow}</span>
+				<h2 id="hh-t" class={h2}>{c.lodge.title}</h2>
+				<div class="mt-2 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+					{
+						c.lodge.units.map((u) => (
+							<div class="border-t-2 border-ink pt-3.5">
+								<h3 class="m-0 font-serif text-[26px] font-normal">{u.name}</h3>
+								<p class="mt-1 mb-0 text-muted">{u.text}</p>
+							</div>
+						))
+					}
+				</div>
+				<p class="mt-2 mb-0 text-muted">{c.lodge.rates}</p>
+			</div>
+		</div>
+	</section>
+
+	<section aria-labelledby="ac-t" class="container-site py-[clamp(56px,7vw,104px)]">
+		<h2 id="ac-t" class="mt-0 mb-7 font-serif text-[clamp(30px,3.4vw,46px)] font-normal">{c.before.title}</h2>
+		<ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-10 p-0">
+			{
+				c.before.items.map((it) => (
+					<li class="border-t border-line py-[18px]">
+						<strong class="mb-1 block">{it.title}</strong>
+						<span class="text-muted">{it.text}</span>
+						{it.link && (
+							<>
+								{' '}
+								<a href={localizedPath('gastronomia', lang)}>{it.link}</a>
+							</>
+						)}
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section
+		id="reserva"
+		aria-labelledby="rv-t"
+		class="container-site grid scroll-mt-[110px] grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-[clamp(32px,5vw,80px)] pb-[clamp(72px,9vw,128px)]"
+	>
+		<div class="flex flex-col gap-4 md:sticky md:top-[150px]">
+			<h2 id="rv-t" class="m-0 font-serif text-[clamp(38px,5vw,72px)] leading-none font-normal">
+				{c.booking.titleA} <em>{c.booking.titleB}</em>
+			</h2>
+			<p class="m-0 max-w-[440px] text-muted">{c.booking.text}</p>
+		</div>
+		<BookingWhatsApp lang={lang} />
+	</section>
+</BaseLayout>
