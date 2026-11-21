@@ -1,0 +1,24 @@
+---
+/** Botón flotante de WhatsApp con mensaje prellenado (Encabezado.dc.html). */
+import type { Lang } from '../i18n/ui';
+import { useTranslations, whatsappUrl } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<a
+	href={whatsappUrl(lang)}
+	target="_blank"
+	rel="noopener"
+	aria-label={t('whatsapp.label')}
+	class="fixed right-[clamp(14px,3vw,28px)] bottom-[clamp(14px,3vw,28px)] z-60 flex h-[54px] items-center gap-2.5 rounded-pill bg-whatsapp pr-5 pl-4 text-[15px] font-semibold text-white no-underline shadow-[0_6px_20px_rgba(0,0,0,.18)] hover:bg-whatsapp-hover hover:text-white"
+>
+	<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+		<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
+	</svg>
+	<span>WhatsApp</span>
+</a>

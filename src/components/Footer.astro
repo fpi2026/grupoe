@@ -1,0 +1,44 @@
+---
+/** Pie del sitio (Pie.dc.html). */
+import Logo from './Logo.astro';
+import { contact, type Lang } from '../i18n/ui';
+import { localizedPath, useTranslations, whatsappUrl } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const heading = 'text-xs font-bold tracking-[.14em] uppercase text-muted';
+---
+
+<footer class="border-t border-line bg-surface transition-[background] duration-[.6s]">
+	<div class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-10 pt-[clamp(48px,7vw,96px)] pb-8">
+		<div class="flex flex-col gap-4">
+			<Logo width={40} height={48} />
+			<p class="m-0 font-serif text-2xl leading-[1.25] text-pretty">{t('site.tagline')}</p>
+		</div>
+		<div class="flex flex-col gap-2 text-[15px]">
+			<strong class={heading}>{t('footer.where')}</strong>
+			<span>{t('footer.address1')}</span>
+			<span>{t('footer.address2')}</span>
+			<span class="text-muted">{t('footer.buffer')}</span>
+		</div>
+		<div class="flex flex-col gap-2 text-[15px]">
+			<strong class={heading}>{t('footer.contact')}</strong>
+			<a href={whatsappUrl()} target="_blank" rel="noopener">WhatsApp {contact.whatsappDisplay}</a>
+			<span>{t('footer.hours')}</span>
+			<a href={localizedPath('contacto', lang)}>{t('nav.contacto')}</a>
+		</div>
+		<div class="flex flex-col gap-2 text-[15px]">
+			<strong class={heading}>{t('footer.credentials')}</strong>
+			<span>{t('footer.seal')}</span>
+			<span>{t('footer.registry')}</span>
+			<a href={localizedPath('sostenibilidad', lang, '#aire')}>{t('footer.air')}</a>
+		</div>
+	</div>
+	<div class="container-site flex flex-wrap justify-between gap-x-8 gap-y-3 border-t border-line pt-5 pb-24 text-[13.5px] text-muted">
+		<span>© {t('site.name')}</span>
+		<span>{t('footer.academic')}</span>
+	</div>
+</footer>

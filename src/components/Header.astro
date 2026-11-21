@@ -1,0 +1,253 @@
+---
+/**
+ * Encabezado del sitio (Encabezado.dc.html): marca, ES/EN, día/noche,
+ * Reservar y navegación principal. Incluye la transición entre páginas
+ * en la que el logo se agranda al centro.
+ */
+import Logo from './Logo.astro';
+import { languages, navOrder, type Lang, type RouteKey } from '../i18n/ui';
+import { localizedPath, useTranslations } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+	route: RouteKey;
+}
+const { lang, route } = Astro.props;
+const t = useTranslations(lang);
+const langs = Object.keys(languages) as Lang[];
+---
+
+<a
+	href="#contenido"
+	class="absolute top-2 -left-[9999px] z-100 rounded-sm bg-btn px-4 py-2.5 text-btn-ink focus:left-3 focus:text-btn-ink"
+>
+	{t('header.skip')}
+</a>
+<header class="sticky top-0 z-50 border-b border-line bg-bg transition-[background] duration-[.6s]">
+	<div class="container-site flex flex-wrap items-center justify-between gap-4 pt-3">
+		<a
+			href={localizedPath('inicio', lang)}
+			data-cael-brand
+			aria-label={t('header.home')}
+			class="flex items-center gap-3 text-ink no-underline hover:text-ink"
+		>
+			<Logo />
+			<span class="flex flex-col leading-[1.1]">
+				<span class="text-[15px] font-bold tracking-[.16em]">{t('header.brand')}</span>
+				<span class="mt-[3px] text-[11px] tracking-[.08em] text-muted">{t('header.brandSub')}</span>
+			</span>
+		</a>
+
+		<div class="flex items-center gap-2">
+			<div role="group" aria-label={t('header.langGroup')} class="flex rounded-pill border border-line p-[3px]">
+				{
+					langs.map((l) => {
+						const current = l === lang;
+						return (
+							<a
+								href={localizedPath(route, l)}
+								hreflang={l}
+								lang={l}
+								aria-current={current ? 'true' : undefined}
+								aria-label={languages[l]}
+								class:list={[
+									'rounded-pill px-[11px] py-2 text-[13px] leading-none font-semibold no-underline',
+									current ? 'bg-ink text-bg hover:text-bg' : 'text-ink hover:text-amber-ink',
+								]}
+							>
+								{l.toUpperCase()}
+							</a>
+						);
+					})
+				}
+			</div>
+
+			<button
+				type="button"
+				data-cael-theme
+				aria-label={t('header.theme')}
+				title={t('header.themeTitle')}
+				class="flex size-10 cursor-pointer items-center justify-center rounded-pill border border-line bg-transparent text-ink"
+			>
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="display:var(--is-day)">
+					<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+				</svg>
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="display:var(--is-night)">
+					<circle cx="12" cy="12" r="4"></circle>
+					<path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+				</svg>
+			</button>
+
+			<a
+				href={localizedPath('alojamiento', lang, '#reserva')}
+				class="inline-flex h-10 items-center rounded-sm bg-btn px-[18px] text-sm font-semibold text-btn-ink no-underline hover:text-btn-ink hover:brightness-110"
+			>
+				{t('header.book')}
+			</a>
+		</div>
+
+		<nav aria-label={t('nav.label')} class="mt-1 flex-[1_1_100%] overflow-x-auto [scrollbar-width:none]">
+			<ul class="m-0 flex list-none gap-[clamp(16px,2.6vw,36px)] p-0 whitespace-nowrap">
+				{
+					navOrder.map((key) => {
+						const current = key === route;
+						return (
+							<li>
+								<a
+									href={localizedPath(key, lang)}
+									aria-current={current ? 'page' : undefined}
+									class:list={[
+										'block border-b-2 pt-2.5 pb-3 text-[14.5px] text-ink no-underline hover:text-amber-ink',
+										current ? 'border-amber font-semibold' : 'border-transparent font-normal',
+									]}
+								>
+									{t(`nav.${key}`)}
+								</a>
+							</li>
+						);
+					})
+				}
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<script>
+	const root = document.documentElement;
+
+	// ---------- Tema día/noche ----------
+	document.querySelector<HTMLButtonElement>('[data-cael-theme]')?.addEventListener('click', () => {
+		const next = root.dataset.theme === 'night' ? 'day' : 'night';
+		root.dataset.theme = next;
+		try {
+			localStorage.setItem('cael-theme', next);
+		} catch {}
+		window.dispatchEvent(new Event('cael-prefs'));
+	});
+
+	// ---------- Transición entre páginas: el logo se agranda al centro ----------
+	const brand = document.querySelector<HTMLElement>('[data-cael-brand]');
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const base = import.meta.env.BASE_URL.replace(/\/+$/, '') + '/';
+	const EASE = 'cubic-bezier(.65,0,.35,1)';
+	let overlay: HTMLDivElement | null = null;
+	let busy = false;
+
+	function cleanup() {
+		overlay?.remove();
+		overlay = null;
+		if (brand) brand.style.visibility = '';
+		root.classList.remove('cael-tr');
+		busy = false;
+	}
+
+	function build(el: HTMLElement) {
+		const r = el.getBoundingClientRect();
+		const vw = innerWidth;
+		const vh = innerHeight;
+		const S = vw < 600 ? 1.6 : 2.1;
+
+		const ov = document.createElement('div');
+		ov.setAttribute('aria-hidden', 'true');
+		ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);pointer-events:all';
+
+		const cl = el.cloneNode(true) as HTMLElement;
+		cl.removeAttribute('href');
+		cl.removeAttribute('data-cael-brand');
+		Object.assign(cl.style, {
+			position: 'fixed',
+			left: `${r.left}px`,
+			top: `${r.top}px`,
+			width: `${r.width}px`,
+			margin: '0',
+			transformOrigin: '0 0',
+			zIndex: '10000',
+			pointerEvents: 'none',
+		});
+
+		const bar = document.createElement('span');
+		bar.style.cssText = `position:fixed;left:50%;width:120px;height:2px;margin-left:-60px;background:var(--line);overflow:hidden;z-index:10000;opacity:0;top:${vh / 2 + (r.height * S) / 2 + 28}px`;
+		const fill = document.createElement('span');
+		fill.style.cssText = 'position:absolute;inset:0;background:var(--forest);transform-origin:0 50%';
+		bar.appendChild(fill);
+
+		ov.append(cl, bar);
+		document.body.appendChild(ov);
+		const center = `translate(${vw / 2 - (r.width * S) / 2 - r.left}px,${vh / 2 - (r.height * S) / 2 - r.top}px) scale(${S})`;
+		overlay = ov;
+		el.style.visibility = 'hidden';
+		return { ov, cl, bar, fill, center };
+	}
+
+	function leave(el: HTMLElement, href: string) {
+		if (busy) return;
+		busy = true;
+		const { ov, cl, bar, fill, center } = build(el);
+		ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, easing: 'ease-out', fill: 'forwards' });
+		const m = cl.animate([{ transform: 'none' }, { transform: center }], { duration: 760, easing: EASE, fill: 'forwards' });
+		bar.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 600, fill: 'forwards' });
+		fill.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(.6)' }], { duration: 900, delay: 600, easing: 'ease-out', fill: 'forwards' });
+		m.finished.then(() => {
+			try {
+				sessionStorage.setItem('cael-tr', '1');
+			} catch {}
+			setTimeout(() => {
+				location.href = href;
+			}, 120);
+		});
+	}
+
+	function enter(el: HTMLElement) {
+		const { ov, cl, bar, fill, center } = build(el);
+		cl.style.transform = center;
+		bar.style.opacity = '1';
+		fill.style.transform = 'scaleX(.6)';
+		root.classList.remove('cael-tr');
+		const t0 = performance.now();
+		const ready = new Promise<void>((res) => {
+			if (document.readyState === 'complete') res();
+			else addEventListener('load', () => res(), { once: true });
+			setTimeout(res, 2600);
+		});
+		ready
+			.then(() => new Promise((res) => setTimeout(res, Math.max(0, 420 - (performance.now() - t0)))))
+			.then(() => {
+				fill.animate([{ transform: 'scaleX(.6)' }, { transform: 'scaleX(1)' }], { duration: 260, easing: 'ease-out', fill: 'forwards' });
+				bar.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, delay: 240, fill: 'forwards' });
+				const m = cl.animate([{ transform: center }, { transform: 'none' }], { duration: 820, delay: 300, easing: EASE, fill: 'forwards' });
+				ov.animate([{ backgroundColor: getComputedStyle(ov).backgroundColor }, { backgroundColor: 'transparent' }], {
+					duration: 520,
+					delay: 560,
+					easing: 'ease-in-out',
+					fill: 'forwards',
+				});
+				m.finished.then(cleanup);
+			});
+	}
+
+	if (brand) {
+		document.addEventListener('click', (e) => {
+			const a = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
+			if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+			const url = new URL(a.href, location.href);
+			// Solo páginas internas del sitio (no archivos ni sitios externos)
+			if (url.origin !== location.origin || !url.pathname.startsWith(base) || /\.[a-z0-9]+$/i.test(url.pathname)) return;
+			if (url.pathname === location.pathname && url.hash) return;
+			if (reduce) return;
+			e.preventDefault();
+			leave(brand, url.href);
+		});
+
+		addEventListener('pageshow', (e) => {
+			if (e.persisted) cleanup();
+		});
+
+		let flag = false;
+		try {
+			flag = !!sessionStorage.getItem('cael-tr');
+			sessionStorage.removeItem('cael-tr');
+		} catch {}
+		if (flag && !reduce) enter(brand);
+		else root.classList.remove('cael-tr');
+	}
+</script>

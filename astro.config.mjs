@@ -15,6 +15,13 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
 
+  // Español en la raíz (/) e inglés en /en/
+  i18n: {
+    locales: ['es', 'en'],
+    defaultLocale: 'es',
+    routing: { prefixDefaultLocale: false },
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },

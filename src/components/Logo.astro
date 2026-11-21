@@ -1,0 +1,14 @@
+---
+/** Marca: la "A" de la cabaña (Encabezado.dc.html / Pie.dc.html). */
+interface Props {
+	width?: number;
+	height?: number;
+	class?: string;
+}
+const { width = 34, height = 42, class: className } = Astro.props;
+---
+
+<svg width={width} height={height} viewBox="0 0 40 48" aria-hidden="true" class={className}>
+	<path d="M20.5 2 L3 46" fill="none" stroke="var(--forest)" stroke-width="1.6"></path>
+	<path d="M19 2 H23.5 L38 46 H30.5 Z" fill="var(--forest)"></path>
+</svg>

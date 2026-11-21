@@ -1,0 +1,72 @@
+---
+/**
+ * Layout base: <head> con SEO y alternativas de idioma, script de tema sin
+ * parpadeo, encabezado, contenido, pie y botón flotante de WhatsApp.
+ */
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { languages, type Lang, type RouteKey } from '../i18n/ui';
+import { localizedPath, useTranslations, withBase } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+	/** Página actual: marca la navegación y enlaza su versión en el otro idioma. */
+	route: RouteKey;
+	/** Título de la página; se completa con el nombre del sitio. */
+	title?: string;
+	description?: string;
+}
+
+const { lang, route, title, description } = Astro.props;
+const t = useTranslations(lang);
+const siteName = t('site.name');
+const fullTitle = title ? `${title} · ${siteName}` : siteName;
+const desc = description ?? t('site.description');
+const canonical = new URL(localizedPath(route, lang), Astro.site);
+const alternates = (Object.keys(languages) as Lang[]).map((l) => ({
+	lang: l,
+	href: new URL(localizedPath(route, l), Astro.site).href,
+}));
+---
+
+<!doctype html>
+<html lang={lang} data-theme="day">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{fullTitle}</title>
+		<meta name="description" content={desc} />
+		<link rel="canonical" href={canonical.href} />
+		{alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+		<link rel="alternate" hreflang="x-default" href={alternates.find((a) => a.lang === 'es')?.href} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={siteName} />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={desc} />
+		<meta property="og:url" content={canonical.href} />
+		<meta property="og:locale" content={lang === 'es' ? 'es_SV' : 'en_US'} />
+		<link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+		<link rel="icon" href={withBase('favicon.ico')} />
+		<meta name="theme-color" content="#F1ECE1" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#0D1410" media="(prefers-color-scheme: dark)" />
+		<!-- Tema guardado antes de pintar, para evitar el parpadeo -->
+		<script is:inline>
+			try {
+				var d = document.documentElement;
+				d.dataset.theme = localStorage.getItem('cael-theme') === 'night' ? 'night' : 'day';
+				if (sessionStorage.getItem('cael-tr')) d.classList.add('cael-tr');
+			} catch (e) {}
+		</script>
+	</head>
+	<body>
+		<Header lang={lang} route={route} />
+		<main id="contenido" tabindex="-1">
+			<slot />
+		</main>
+		<Footer lang={lang} />
+		<WhatsAppButton lang={lang} />
+	</body>
+</html>
