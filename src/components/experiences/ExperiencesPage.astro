@@ -1,0 +1,85 @@
+---
+/** Página de Experiencias (Experiencias.dc.html); la usan /experiencias/ y /en/experiences/. */
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import montana from '../../assets/img/montana.jpg';
+import panorama from '../../assets/img/panorama.jpg';
+import cascada from '../../assets/img/cascada.jpg';
+import hongo from '../../assets/img/hongo-rojo.jpg';
+import amonitas from '../../assets/img/amonitas-2.jpg';
+import { experiencias, type ExperiencePhoto } from '../../data/experiencias';
+import { contact, type Lang } from '../../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const c = experiencias[lang];
+const photos: Record<Exclude<ExperiencePhoto, null>, ImageMetadata> = { panorama, cascada, hongo, amonitas };
+const ask = (title: string) => `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(`${c.askMessage} ${title}`)}`;
+---
+
+<BaseLayout lang={lang} route="experiencias" title={c.meta.title} description={c.meta.description}>
+	<section class="relative flex min-h-[min(78vh,720px)] items-end overflow-hidden bg-[#0D1410]">
+		<Image
+			src={montana}
+			alt={c.hero.alt}
+			widths={[640, 960, 1280, 1600]}
+			sizes="100vw"
+			loading="eager"
+			fetchpriority="high"
+			class="absolute inset-0 size-full object-cover"
+			style="object-position:50% 30%"
+		/>
+		<div aria-hidden="true" class="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,12,9,.8),rgba(8,12,9,.1)_65%)]"></div>
+		<div class="container-site relative flex flex-col gap-3.5 py-[clamp(32px,6vw,80px)] text-[#F6F2E8]">
+			<span class="eyebrow">{c.hero.eyebrow}</span>
+			<h1 class="m-0 max-w-[900px] font-serif text-h1 font-normal tracking-[-.02em]">
+				{c.hero.titleA} <em>{c.hero.titleB}</em>
+			</h1>
+		</div>
+	</section>
+
+	<section class="container-site pt-[clamp(32px,4vw,48px)]">
+		<p role="note" class="m-0 flex items-start gap-3 rounded-md border border-amber bg-[color-mix(in_oklab,var(--amber)_10%,transparent)] px-[18px] py-4">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" class="mt-[3px] flex-none text-amber-ink">
+				<circle cx="12" cy="12" r="10"></circle>
+				<path d="M12 8v4M12 16h.01"></path>
+			</svg>
+			<span>{c.notice}</span>
+		</p>
+	</section>
+
+	<section aria-label={c.listLabel} class="container-site flex flex-col gap-[clamp(48px,6vw,96px)] pt-[clamp(40px,5vw,72px)] pb-[clamp(72px,9vw,128px)]">
+		{
+			c.items.map((x, i) => (
+				<article class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-center gap-[clamp(24px,4vw,64px)]">
+					{x.photo ? (
+						<Image
+							src={photos[x.photo]}
+							alt={x.alt ?? ''}
+							widths={[480, 720, 960, 1280]}
+							sizes="(min-width: 900px) 640px, 100vw"
+							class:list={['aspect-[4/3] w-full rounded-lg object-cover', i % 2 && 'min-[960px]:order-2']}
+						/>
+					) : (
+						<div class:list={['flex aspect-[4/3] items-center justify-center rounded-lg border border-dashed border-line text-sm text-muted', i % 2 && 'min-[960px]:order-2']}>
+							{c.photoPending}
+						</div>
+					)}
+					<div class="flex flex-col gap-3.5">
+						<span class="font-serif text-xl text-amber-ink italic" aria-hidden="true">
+							{String(i + 1).padStart(2, '0')}
+						</span>
+						<h2 class="m-0 font-serif text-[clamp(32px,3.8vw,52px)] leading-[1.04] font-normal">{x.title}</h2>
+						<p class="m-0 max-w-[480px] text-pretty text-muted">{x.text}</p>
+						{x.facts && <p class="m-0 font-semibold">{x.facts}</p>}
+						<a href={ask(x.title)} target="_blank" rel="noopener" class="font-semibold">
+							{c.ask} →
+						</a>
+					</div>
+				</article>
+			))
+		}
+	</section>
+</BaseLayout>
