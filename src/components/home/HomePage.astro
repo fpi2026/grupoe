@@ -3,6 +3,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from './Hero.astro';
 import Attributes from './Attributes.astro';
+import Timeline from './Timeline.astro';
 import Counters from './Counters.astro';
 import Cabins from './Cabins.astro';
 import Awards from './Awards.astro';
@@ -21,6 +22,7 @@ const c = inicio[lang];
 <BaseLayout lang={lang} route="inicio" title={c.meta.title} description={c.meta.description} fullTitle>
 	<Hero lang={lang} t={c.hero} />
 	<Attributes t={c.attrs} />
+	<Timeline lang={lang} t={c.timeline} />
 	<Counters t={c.counters} />
 	<Cabins lang={lang} t={c.cabins} />
 	<Awards t={c.awards} />

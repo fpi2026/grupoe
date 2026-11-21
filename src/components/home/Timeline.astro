@@ -1,0 +1,176 @@
+---
+/**
+ * «De mar a montaña»: línea de tiempo ligada al scroll (Inicio.dc.html + lineas.js).
+ * El panel queda fijo mientras se recorre una pista de 520vh; el avance (0 a 7)
+ * mueve las líneas del canvas y funde las fotos con WebGL.
+ * Sin JavaScript, los cuatro pasos se muestran como una lista.
+ */
+import { Image, getImage } from 'astro:assets';
+import amonitas from '../../assets/img/amonitas.jpg';
+import fosil from '../../assets/img/fosil-2.jpg';
+import montana from '../../assets/img/montana.jpg';
+import hongo from '../../assets/img/hongo-blanco.jpg';
+import type { Lang } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/utils';
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	lang: Lang;
+	t: HomeContent['timeline'];
+}
+const { lang, t } = Astro.props;
+const photos = [amonitas, fosil, montana, hongo];
+// Texturas para el fundido WebGL (una sola resolución, liviana)
+const textures = await Promise.all(photos.map((src) => getImage({ src, width: 1200, format: 'webp' })));
+const morphSrcs = JSON.stringify(textures.map((x) => x.src));
+---
+
+<section aria-labelledby="tl-t" data-timeline class="tl bg-surface transition-[background] duration-[.6s]">
+	<div class="container-site py-[clamp(72px,9vw,136px)]">
+		<div data-track class="tl-track relative">
+			<div class="tl-sticky flex flex-col gap-[clamp(14px,2vw,24px)]">
+				<div class="flex flex-col">
+					<span class="eyebrow text-amber-ink">{t.eyebrow}</span>
+					<h2 id="tl-t" class="mt-1.5 mb-0 font-serif text-[clamp(32px,4.2vw,60px)] leading-none font-normal tracking-[-.02em]">
+						{t.titleA} <em>{t.titleB}</em>
+					</h2>
+				</div>
+				<div class="tl-grid">
+					<div class="tl-media relative min-h-0 overflow-hidden rounded-lg bg-[#0D1410]">
+						{
+							photos.map((src, i) => (
+								<Image
+									src={src}
+									alt={t.steps[i]!.alt}
+									widths={[480, 800, 1200]}
+									sizes="(min-width: 900px) 50vw, 100vw"
+									data-step-img
+									class="absolute inset-0 size-full object-cover transition-opacity duration-[.8s] ease-out"
+									style={`opacity:${i === 0 ? 1 : 0}`}
+								/>
+							))
+						}
+						<canvas data-morph data-srcs={morphSrcs} aria-hidden="true" class="absolute inset-0 block size-full"></canvas>
+						<div class="absolute bottom-4 left-4 flex gap-1.5" aria-hidden="true">
+							{
+								photos.map((_, i) => (
+									<span
+										data-dot
+										class="h-[3px] w-7 rounded-[2px] bg-[#F6F2E8] shadow-[0_0_4px_rgba(0,0,0,.4)] transition-opacity duration-[.4s]"
+										style={`opacity:${i === 0 ? 1 : 0.35}`}
+									/>
+								))
+							}
+						</div>
+					</div>
+					<div class="tl-texts relative min-h-0">
+						<canvas data-lines aria-hidden="true" class="absolute inset-0 block size-full text-ink"></canvas>
+						{
+							t.steps.map((s) => (
+								<div data-step-text class="tl-text flex flex-col justify-center gap-3.5">
+									<span class="font-serif text-[clamp(17px,1.5vw,20px)] text-amber-ink italic">{s.kicker}</span>
+									<h3 class="m-0 font-serif text-[clamp(28px,3.4vw,46px)] leading-[1.05] font-normal">{s.title}</h3>
+									<p class="m-0 max-w-[460px] text-[clamp(15.5px,1.2vw,17px)] text-pretty text-muted">{s.text}</p>
+								</div>
+							))
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+		<p class="mt-10 mb-0 text-sm text-muted">
+			{t.foot}{' '}
+			<a href={localizedPath('experiencias', lang)}>{t.footLink} →</a>
+		</p>
+	</div>
+</section>
+
+<style>
+	/* ----- Sin JavaScript: lista simple ----- */
+	.tl:not([data-ready]) .tl-media,
+	.tl:not([data-ready]) canvas {
+		display: none;
+	}
+	.tl:not([data-ready]) .tl-text {
+		padding: 20px 0;
+		border-top: 1px solid var(--line);
+	}
+
+	/* ----- Con JavaScript: panel fijo durante el recorrido ----- */
+	.tl[data-ready] .tl-track {
+		height: 520vh;
+	}
+	/* --hdr: alto real del encabezado fijo (lo mide el script) */
+	.tl[data-ready] .tl-sticky {
+		position: sticky;
+		top: calc(var(--hdr, 116px) + 12px);
+		height: calc(100svh - var(--hdr, 116px) - 32px);
+	}
+	.tl[data-ready] .tl-grid {
+		flex: 1;
+		min-height: 0;
+		display: grid;
+		gap: clamp(16px, 4vw, 64px);
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: minmax(0, 38fr) minmax(0, 62fr);
+	}
+	@media (min-width: 900px) {
+		.tl[data-ready] .tl-grid {
+			grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+			grid-template-rows: minmax(0, 1fr);
+		}
+	}
+	.tl[data-ready] .tl-text {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+	}
+</style>
+
+<script>
+	import { CaelLines, CaelMorph } from '../../scripts/lineas.js';
+
+	const section = document.querySelector<HTMLElement>('[data-timeline]');
+
+	if (section) {
+		section.dataset.ready = '';
+		const track = section.querySelector<HTMLElement>('[data-track]')!;
+		const lines = section.querySelector<HTMLCanvasElement>('[data-lines]')!;
+		const morphCanvas = section.querySelector<HTMLCanvasElement>('[data-morph]')!;
+		const texts = [...section.querySelectorAll<HTMLElement>('[data-step-text]')];
+		const imgs = [...section.querySelectorAll<HTMLElement>('[data-step-img]')];
+		const dots = [...section.querySelectorAll<HTMLElement>('[data-dot]')];
+		const srcs = JSON.parse(morphCanvas.dataset.srcs ?? '[]') as string[];
+
+		const morph = new CaelMorph(morphCanvas, srcs);
+		const engine = new CaelLines(lines, texts, morph);
+		let active = -1;
+		let HEADER = 116;
+
+		// El panel se fija justo debajo del encabezado, cuyo alto cambia en móvil
+		const header = document.querySelector<HTMLElement>('body > header');
+		function measure() {
+			HEADER = (header?.getBoundingClientRect().height ?? 104) + 12;
+			section!.style.setProperty('--hdr', `${HEADER - 12}px`);
+		}
+		measure();
+		if (header) new ResizeObserver(() => (measure(), onScroll())).observe(header);
+
+		function onScroll() {
+			const r = track.getBoundingClientRect();
+			const span = Math.max(1, r.height - (innerHeight - HEADER));
+			const s = Math.max(0, Math.min(1, (HEADER - r.top) / span)) * 7;
+			engine.setProgress(Math.min(7, s));
+			const a = Math.max(0, Math.min(3, Math.floor((s + 0.5) / 2)));
+			if (a !== active) {
+				active = a;
+				imgs.forEach((im, i) => (im.style.opacity = i === a ? '1' : '0'));
+				dots.forEach((d, i) => (d.style.opacity = i === a ? '1' : '0.35'));
+			}
+		}
+
+		addEventListener('scroll', onScroll, { passive: true });
+		addEventListener('resize', onScroll);
+		onScroll();
+	}
+</script>

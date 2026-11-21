@@ -25,6 +25,14 @@ export interface HomeContent {
 		lead: string;
 		items: { title: string; text: string }[];
 	};
+	timeline: {
+		eyebrow: string;
+		titleA: string;
+		titleB: string;
+		steps: { kicker: string; title: string; text: string; alt: string }[];
+		foot: string;
+		footLink: string;
+	};
 	counters: {
 		label: string;
 		items: { value: number; decimals: number; suffix: string; unit: string; label: string }[];
@@ -107,6 +115,39 @@ export const inicio: Record<Lang, HomeContent> = {
 					text: 'De la granja a tu mesa: desayunos típicos, gallina india, tilapia y lácteos.',
 				},
 			],
+		},
+		timeline: {
+			eyebrow: 'Viaje al pasado marino',
+			titleA: 'De mar',
+			titleB: 'a montaña',
+			steps: [
+				{
+					kicker: '~125 a ~94 millones de años · Cretácico',
+					title: 'Un mar cálido',
+					text: 'Esta zona era fondo marino. Sus calizas guardan amonitas y rudistas, animales con concha que vivían en aguas cálidas y poco profundas.',
+					alt: 'Amonitas fósiles cortadas y pulidas, con sus cámaras en espiral',
+				},
+				{
+					kicker: 'Después',
+					title: 'El levantamiento',
+					text: 'Las capas marinas se elevaron y se plegaron. Por eso hoy aparecen fósiles de mar en las laderas de la montaña.',
+					alt: 'Fósil de amonita en roca caliza sostenido en la mano',
+				},
+				{
+					kicker: 'Más tarde',
+					title: 'Los volcanes',
+					text: 'La actividad volcánica cubrió y moldeó el relieve que hoy comparten El Salvador, Guatemala y Honduras.',
+					alt: 'Montañas cubiertas de bosque con rayos de sol sobre una cancha de pasto',
+				},
+				{
+					kicker: 'Hoy',
+					title: 'El bosque nebuloso',
+					text: 'Niebla, musgo y hongos sobre la roca que fue mar. Un bosque que protegemos desde la zona de amortiguamiento de la reserva.',
+					alt: 'Hongo blanco gelatinoso sobre un tronco con musgo',
+				},
+			],
+			foot: 'Los fósiles son marinos: amonitas y rudistas. Puedes verlos de cerca en el Museo Geológico y Paleontológico, a poca distancia.',
+			footLink: 'Experiencias',
 		},
 		counters: {
 			label: 'En cifras',
@@ -217,6 +258,39 @@ export const inicio: Record<Lang, HomeContent> = {
 					text: 'Farm to table: traditional breakfasts, free-range hen, tilapia and dairy.',
 				},
 			],
+		},
+		timeline: {
+			eyebrow: 'A journey to the marine past',
+			titleA: 'From sea',
+			titleB: 'to mountain',
+			steps: [
+				{
+					kicker: '~125 to ~94 million years ago · Cretaceous',
+					title: 'A warm sea',
+					text: 'This area was seafloor. Its limestones hold ammonites and rudists, shelled animals that lived in warm, shallow water.',
+					alt: 'Fossil ammonites cut and polished, showing their spiral chambers',
+				},
+				{
+					kicker: 'Later',
+					title: 'The uplift',
+					text: 'The marine layers were lifted and folded. That is why sea fossils turn up on the mountain slopes today.',
+					alt: 'Ammonite fossil in limestone held in a hand',
+				},
+				{
+					kicker: 'Then',
+					title: 'The volcanoes',
+					text: 'Volcanic activity covered and shaped the terrain now shared by El Salvador, Guatemala and Honduras.',
+					alt: 'Forest-covered mountains with sun rays over a grass field',
+				},
+				{
+					kicker: 'Today',
+					title: 'The cloud forest',
+					text: "Mist, moss and fungi on rock that was once sea. A forest we protect from the reserve's buffer zone.",
+					alt: 'White jelly fungus on a mossy log',
+				},
+			],
+			foot: 'The fossils are marine: ammonites and rudists. See them up close at the nearby Geological and Paleontological Museum.',
+			footLink: 'Experiences',
 		},
 		counters: {
 			label: 'In numbers',
