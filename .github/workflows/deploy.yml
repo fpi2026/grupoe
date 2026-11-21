@@ -1,0 +1,48 @@
+# Publica el sitio en GitHub Pages con la acción oficial de Astro.
+# https://docs.astro.build/en/guides/deploy/github/
+name: Desplegar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Permite publicar a mano desde la pestaña Actions
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un solo despliegue a la vez; no se cancela uno que ya está en curso
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Compilar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+
+      - name: Revisar tipos, compilar y subir el sitio
+        uses: withastro/action@v6
+        with:
+          build-cmd: npm run check && npm run build
+
+  # Mientras GitHub Pages no esté activado en el repositorio, solo se publica
+  # al ejecutar el flujo a mano (Actions → Run workflow). Para publicar en cada
+  # push a main, borrar la línea "if".
+  deploy:
+    name: Publicar
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
