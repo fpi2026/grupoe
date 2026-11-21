@@ -1,0 +1,35 @@
+---
+/** Te esperamos entre la niebla: datos de contacto y reserva guiada por WhatsApp. */
+import BookingWhatsApp from '../BookingWhatsApp.astro';
+import { contact, type Lang } from '../../i18n/ui';
+import { whatsappUrl } from '../../i18n/utils';
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	lang: Lang;
+	t: HomeContent['booking'];
+}
+const { lang, t } = Astro.props;
+---
+
+<section id="reserva" aria-labelledby="con-t" class="container-site scroll-mt-[110px] py-[clamp(72px,9vw,128px)]">
+	<div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-[clamp(32px,5vw,80px)]">
+		<div class="flex flex-col gap-[22px]">
+			<h2 id="con-t" class="m-0 font-serif text-[clamp(38px,5.4vw,76px)] leading-none font-normal tracking-[-.02em]">
+				{t.titleA} <em>{t.titleB}</em>
+			</h2>
+			<dl class="m-0 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3.5 text-base">
+				<dt class="text-muted">WhatsApp</dt>
+				<dd class="m-0"><a href={whatsappUrl(lang)} target="_blank" rel="noopener">{contact.whatsappDisplay}</a></dd>
+				<dt class="text-muted">{t.hours}</dt>
+				<dd class="m-0">{t.hoursValue}</dd>
+				<dt class="text-muted">{t.from}</dt>
+				<dd class="m-0">{t.fromValue}</dd>
+				<dt class="text-muted">{t.location}</dt>
+				<dd class="m-0">{t.locationValue}</dd>
+			</dl>
+			<p class="m-0 border-l-[3px] border-amber pl-3.5 text-[14.5px] text-muted">{t.note}</p>
+		</div>
+		<BookingWhatsApp lang={lang} />
+	</div>
+</section>

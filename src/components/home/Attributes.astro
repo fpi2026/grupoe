@@ -1,0 +1,31 @@
+---
+/** Seis razones para quedarte (atributos del informe). */
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	t: HomeContent['attrs'];
+}
+const { t } = Astro.props;
+---
+
+<section aria-labelledby="atr-t" class="container-site py-[clamp(72px,9vw,136px)]">
+	<div class="mb-[clamp(40px,5vw,72px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-end gap-x-16 gap-y-6">
+		<h2 id="atr-t" class="m-0 font-serif text-h2 font-normal tracking-[-.015em] text-balance">{t.title}</h2>
+		<p class="m-0 max-w-[520px] text-pretty text-muted">{t.lead}</p>
+	</div>
+	<ol class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-x-12 p-0">
+		{
+			t.items.map((a, i) => (
+				<li class="grid grid-cols-[52px_1fr] gap-x-3 gap-y-1 border-t border-line pt-7 pb-9">
+					<span class="font-serif text-[22px] text-amber-ink italic" aria-hidden="true">
+						{String(i + 1).padStart(2, '0')}
+					</span>
+					<div class="flex flex-col gap-2">
+						<h3 class="m-0 font-serif text-[25px] leading-[1.2] font-medium">{a.title}</h3>
+						<p class="m-0 text-base text-pretty text-muted">{a.text}</p>
+					</div>
+				</li>
+			))
+		}
+	</ol>
+</section>

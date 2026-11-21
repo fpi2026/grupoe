@@ -1,0 +1,119 @@
+---
+/** Portada de Inicio: foto de día y de noche según el tema, neblina y llamadas a la acción. */
+import { Image } from 'astro:assets';
+import Fog from '../Fog.astro';
+import dia from '../../assets/img/dia-cabanas.jpg';
+import noche from '../../assets/img/noche-cabana.jpg';
+import type { Lang } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/utils';
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	lang: Lang;
+	t: HomeContent['hero'];
+}
+const { lang, t } = Astro.props;
+const img = 'absolute inset-0 size-full object-cover transition-opacity duration-[1.4s] ease-out';
+const widths = [640, 960, 1280, 1600, 2000];
+---
+
+<section aria-label={t.titleA + ' ' + t.titleB} class="relative flex min-h-[calc(100svh-108px)] items-end overflow-hidden bg-[#0D1410]">
+	<Image src={dia} alt={t.altDay} widths={widths} sizes="100vw" loading="eager" fetchpriority="high" class={img} style="object-position:50% 45%;opacity:var(--day)" />
+	<Image src={noche} alt={t.altNight} widths={widths} sizes="100vw" loading="eager" class={img} style="object-position:50% 72%;opacity:var(--night)" />
+	<div
+		aria-hidden="true"
+		class="absolute inset-0"
+		style="background:linear-gradient(to top,rgba(8,12,9,.86) 0%,rgba(8,12,9,.62) 40%,rgba(8,12,9,.32) 70%,rgba(8,12,9,.18) 100%),linear-gradient(to right,rgba(8,12,9,.5) 0%,rgba(8,12,9,0) 65%)"
+	>
+	</div>
+	<Fog />
+	<div class="container-site relative flex flex-col gap-[22px] pt-[clamp(32px,6vw,88px)] pb-[clamp(96px,8vw,112px)] text-[#F6F2E8] [text-shadow:0_1px_12px_rgba(0,0,0,.35)]">
+		<span class="eyebrow max-w-[640px]">{t.eyebrow}</span>
+		<h1 class="m-0 max-w-[1000px] font-serif text-display font-normal tracking-[-.02em] text-balance">
+			{t.titleA} <em class="font-light">{t.titleB}</em>
+		</h1>
+		<p class="m-0 max-w-[560px] text-[clamp(17px,1.4vw,19px)] text-pretty">{t.lead}</p>
+		<div class="mt-1.5 flex flex-wrap items-center gap-3 [text-shadow:none]">
+			<a
+				href="#reserva"
+				class="inline-flex h-[52px] items-center gap-3.5 rounded-sm bg-[#F6F2E8] px-[22px] font-semibold text-[#1C2620] no-underline hover:bg-white hover:text-[#1C2620]"
+			>
+				<span>{t.book}</span><span aria-hidden="true">→</span>
+			</a>
+			<a
+				href={localizedPath('alojamiento', lang)}
+				class="inline-flex h-[52px] items-center rounded-sm border border-[rgba(246,242,233,.6)] px-[22px] font-semibold text-[#F6F2E8] no-underline hover:bg-[rgba(246,242,233,.12)] hover:text-white"
+			>
+				{t.cabins}
+			</a>
+			<div
+				role="group"
+				aria-label={t.dayNight}
+				class="flex rounded-pill border border-[rgba(246,242,233,.35)] bg-[rgba(8,12,9,.45)] p-1 backdrop-blur-[6px]"
+			>
+				<button type="button" data-set-theme="day" aria-pressed="true" class="hero-theme">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+						<circle cx="12" cy="12" r="4"></circle>
+						<path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+					</svg>
+					{t.day}
+				</button>
+				<button type="button" data-set-theme="night" aria-pressed="false" class="hero-theme">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+						<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+					</svg>
+					{t.night}
+				</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero-theme {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		height: 40px;
+		padding: 0 16px;
+		border: 0;
+		border-radius: 999px;
+		cursor: pointer;
+		font-weight: 600;
+		font-size: 14px;
+		background: transparent;
+		color: #f6f2e8;
+	}
+	/* Estado activo según el tema, sin esperar al JavaScript */
+	:global(:root:not([data-theme='night'])) .hero-theme[data-set-theme='day'] {
+		background: #f6f2e8;
+		color: #1c2620;
+	}
+	:global(:root[data-theme='night']) .hero-theme[data-set-theme='night'] {
+		background: #f0b04a;
+		color: #1a1206;
+	}
+</style>
+
+<script>
+	const root = document.documentElement;
+	const buttons = document.querySelectorAll<HTMLButtonElement>('[data-set-theme]');
+
+	function sync() {
+		const theme = root.dataset.theme === 'night' ? 'night' : 'day';
+		buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setTheme === theme)));
+	}
+
+	buttons.forEach((b) =>
+		b.addEventListener('click', () => {
+			const theme = b.dataset.setTheme === 'night' ? 'night' : 'day';
+			root.dataset.theme = theme;
+			try {
+				localStorage.setItem('cael-theme', theme);
+			} catch {}
+			window.dispatchEvent(new Event('cael-prefs'));
+		}),
+	);
+	window.addEventListener('cael-prefs', sync);
+	sync();
+</script>

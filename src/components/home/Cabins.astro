@@ -1,0 +1,44 @@
+---
+/** Dónde dormir: Cabañas Alpinas y hospedaje hermano. */
+import { Image } from 'astro:assets';
+import nocheCabana from '../../assets/img/noche-cabana-2.jpg';
+import diaCabana from '../../assets/img/dia-cabana.jpg';
+import type { Lang } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/utils';
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	lang: Lang;
+	t: HomeContent['cabins'];
+}
+const { lang, t } = Astro.props;
+const photos = [nocheCabana, diaCabana];
+---
+
+<section aria-labelledby="cab-t" class="container-site py-[clamp(48px,6vw,96px)]">
+	<div class="mb-10 flex flex-wrap items-end justify-between gap-6">
+		<h2 id="cab-t" class="m-0 font-serif text-h2 font-normal tracking-[-.015em]">{t.title}</h2>
+		<a href={localizedPath('alojamiento', lang)} class="font-semibold">{t.all} →</a>
+	</div>
+	<div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,460px),1fr))] gap-[clamp(24px,3vw,40px)]">
+		{
+			t.items.map((c, i) => (
+				<article class="flex flex-col gap-5">
+					<Image
+						src={photos[i]!}
+						alt={c.alt}
+						widths={[480, 720, 960, 1280]}
+						sizes="(min-width: 1000px) 640px, 100vw"
+						class="aspect-[4/3] w-full rounded-lg object-cover"
+					/>
+					<div class="flex flex-col gap-2.5">
+						<span class="eyebrow text-amber-ink">{c.eyebrow}</span>
+						<h3 class="m-0 font-serif text-[34px] leading-[1.1] font-medium">{c.name}</h3>
+						<p class="m-0 text-muted">{c.text}</p>
+						<p class="m-0 font-semibold">{c.rate}</p>
+					</div>
+				</article>
+			))
+		}
+	</div>
+</section>

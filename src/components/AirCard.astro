@@ -1,0 +1,132 @@
+---
+/**
+ * Tarjeta de calidad del aire (TarjetaAire.dc.html).
+ * Lee la última medición de src/data/aire.json, que en la fase 6 escribirá
+ * scripts/aire.mjs. Sin medición real no muestra cifras: solo enlaza al
+ * historial de la estación en AireSV.
+ */
+import QRCode from 'qrcode';
+import aire from '../data/aire.json';
+import { contact, type Lang } from '../i18n/ui';
+
+interface Reading {
+	ica: number;
+	pm25: number;
+	pm10: number;
+	co2: number;
+	/** Fecha ISO de la medición */
+	fecha: string;
+}
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const reading = (aire as { ultima: Reading | null }).ultima;
+
+// Niveles del ICA (mismos que AireSV)
+const levels = [
+	{ max: 50, color: 'var(--color-ica-buena)', es: 'Buena', en: 'Good' },
+	{ max: 100, color: 'var(--color-ica-moderada)', es: 'Moderada', en: 'Moderate' },
+	{ max: 150, color: 'var(--color-ica-sensibles)', es: 'Dañina a sensibles', en: 'Unhealthy for sensitive groups' },
+	{ max: 200, color: 'var(--color-ica-danina)', es: 'Dañina', en: 'Unhealthy' },
+	{ max: 300, color: 'var(--color-ica-muy-danina)', es: 'Muy dañina', en: 'Very unhealthy' },
+	{ max: Infinity, color: 'var(--color-ica-peligrosa)', es: 'Peligrosa', en: 'Hazardous' },
+];
+const level = reading ? levels.findIndex((l) => reading.ica <= l.max) : -1;
+const lv = level >= 0 ? levels[level]! : null;
+
+const t = {
+	es: {
+		station: 'Estación El Limo · Metapán',
+		title: reading ? 'Calidad del aire en vivo' : 'Calidad del aire',
+		aqi: 'ICA',
+		excellent: 'Calidad del aire: excelente',
+		reading: 'Última medición:',
+		empty: 'Pronto verás aquí la última medición de la estación: Índice de Calidad del Aire (ICA), PM2.5, PM10 y CO₂. Mientras tanto, consulta las mediciones en AireSV.',
+		history: 'Ver historial en AireSV',
+		qr: 'Código QR al historial de mediciones en AireSV',
+	},
+	en: {
+		station: 'El Limo station · Metapán',
+		title: reading ? 'Live air quality' : 'Air quality',
+		aqi: 'AQI',
+		excellent: 'Air quality: excellent',
+		reading: 'Last reading:',
+		empty: "The station's latest reading will appear here soon: Air Quality Index (AQI), PM2.5, PM10 and CO₂. Meanwhile, see the readings on AireSV.",
+		history: 'See history on AireSV',
+		qr: 'QR code to the measurement history on AireSV',
+	},
+}[lang];
+
+const date = reading
+	? new Intl.DateTimeFormat(lang === 'es' ? 'es-SV' : 'en-US', {
+			dateStyle: 'medium',
+			timeStyle: 'short',
+			timeZone: 'America/El_Salvador',
+		}).format(new Date(reading.fecha))
+	: '';
+
+const qr = await QRCode.toString(contact.airesvHistory, { type: 'svg', margin: 1, color: { dark: '#1C2620', light: '#FFFFFF' } });
+---
+
+<article aria-labelledby="aire-t" class="flex flex-col gap-6 rounded-lg border border-line bg-card p-[clamp(20px,3vw,32px)] transition-[background] duration-[.6s]">
+	<div class="flex flex-col gap-1">
+		<span class="flex items-center gap-2 text-xs tracking-[.14em] text-muted uppercase">
+			{reading && <span class="size-2 animate-pulse-soft rounded-full" style={`background:${lv!.color}`} />}
+			{t.station}
+		</span>
+		<h3 id="aire-t" class="m-0 font-serif text-[clamp(26px,2.6vw,32px)] leading-[1.15] font-medium">{t.title}</h3>
+	</div>
+
+	{
+		reading && lv ? (
+			<>
+				<div class="flex flex-wrap items-stretch gap-5">
+					<div class="flex min-w-[150px] flex-col justify-between rounded-md px-[22px] py-4 text-white" style={`background:${lv.color}`}>
+						<span class="text-[13px] font-semibold tracking-[.06em]">{t.aqi}</span>
+						<span class="font-serif text-[88px] leading-[.95] font-medium">{reading.ica}</span>
+						<span class="font-semibold">{lang === 'es' ? lv.es : lv.en}</span>
+					</div>
+					<dl class="m-0 grid flex-[1_1_220px] grid-cols-3 border-t border-line">
+						{[
+							{ k: 'PM2.5', v: reading.pm25, u: 'µg/m³' },
+							{ k: 'PM10', v: reading.pm10, u: 'µg/m³' },
+							{ k: 'CO₂', v: reading.co2, u: 'ppm' },
+						].map((m) => (
+							<div class="flex flex-col gap-0.5 pt-3.5 pr-2.5">
+								<dt class="text-[13px] text-muted">{m.k}</dt>
+								<dd class="m-0 font-serif text-[32px] leading-[1.1]">{m.v}</dd>
+								<dd class="m-0 text-[12.5px] text-muted">{m.u}</dd>
+							</div>
+						))}
+					</dl>
+				</div>
+				<div aria-hidden="true" class="flex flex-col gap-1.5">
+					<div class="grid h-2 grid-cols-6 gap-[3px]">
+						{levels.map((l, j) => (
+							<span class="rounded-[2px]" style={`background:${l.color};opacity:${j === level ? 1 : 0.28}`} />
+						))}
+					</div>
+					<div class="flex justify-between text-xs text-muted">
+						<span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>300+</span>
+					</div>
+				</div>
+				{level === 0 && <p class="m-0 font-semibold text-forest">{t.excellent}</p>}
+				<p class="m-0 text-sm text-muted">
+					{t.reading} <time datetime={reading.fecha}>{date}</time>
+				</p>
+			</>
+		) : (
+			<p class="m-0 text-pretty text-muted">{t.empty}</p>
+		)
+	}
+
+	<div class="flex flex-wrap items-center gap-4 border-t border-line pt-5">
+		<div role="img" aria-label={t.qr} class="size-[88px] shrink-0 overflow-hidden rounded-sm bg-white [&>svg]:size-full" set:html={qr} />
+		<div class="flex flex-[1_1_180px] flex-col gap-2.5">
+			<a href={contact.airesvHistory} target="_blank" rel="noopener" class="font-semibold">{t.history} →</a>
+			<span class="text-xs font-semibold tracking-[.08em] text-muted">UES · AireSV</span>
+		</div>
+	</div>
+</article>

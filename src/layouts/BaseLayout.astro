@@ -17,12 +17,14 @@ interface Props {
 	/** Título de la página; se completa con el nombre del sitio. */
 	title?: string;
 	description?: string;
+	/** Usar el título tal cual, sin agregar el nombre del sitio. */
+	fullTitle?: boolean;
 }
 
-const { lang, route, title, description } = Astro.props;
+const { lang, route, title, description, fullTitle: useTitleAsIs = false } = Astro.props;
 const t = useTranslations(lang);
 const siteName = t('site.name');
-const fullTitle = title ? `${title} · ${siteName}` : siteName;
+const fullTitle = title ? (useTitleAsIs ? title : `${title} · ${siteName}`) : siteName;
 const desc = description ?? t('site.description');
 const canonical = new URL(localizedPath(route, lang), Astro.site);
 const alternates = (Object.keys(languages) as Lang[]).map((l) => ({

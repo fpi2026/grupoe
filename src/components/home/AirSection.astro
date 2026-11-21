@@ -1,0 +1,25 @@
+---
+/** El aire que respiras, medido: presentación y tarjeta de la estación. */
+import AirCard from '../AirCard.astro';
+import type { Lang } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/utils';
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	lang: Lang;
+	t: HomeContent['air'];
+}
+const { lang, t } = Astro.props;
+---
+
+<section aria-labelledby="aire-h" class="container-site py-[clamp(56px,7vw,112px)]">
+	<div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-center gap-[clamp(32px,5vw,80px)]">
+		<div class="flex flex-col gap-[18px]">
+			<span class="eyebrow text-amber-ink">{t.eyebrow}</span>
+			<h2 id="aire-h" class="m-0 font-serif text-h2 font-normal tracking-[-.015em] text-balance">{t.title}</h2>
+			<p class="m-0 max-w-[480px] text-pretty text-muted">{t.text}</p>
+			<a href={localizedPath('sostenibilidad', lang, '#aire')} class="font-semibold">{t.more} →</a>
+		</div>
+		<AirCard lang={lang} />
+	</div>
+</section>

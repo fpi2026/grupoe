@@ -36,6 +36,8 @@ export const navOrder: RouteKey[] = [
 export const contact = {
 	whatsapp: '50375683400',
 	whatsappDisplay: '+503 7568-3400',
+	/** Historial de la estación del hostal en AireSV (Plan del sitio). */
+	airesvHistory: 'https://airesv.esaapp.com/historial/METAPANLIMOHOSTAL',
 } as const;
 
 export const ui = {

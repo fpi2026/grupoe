@@ -1,0 +1,228 @@
+---
+/**
+ * Reserva guiada por WhatsApp (Reserva.dc.html): unidad, fechas y personas
+ * arman un mensaje que se abre en wa.me. No guarda ni envía datos a otro lado.
+ */
+import { contact, type Lang } from '../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+
+const units = [
+	{
+		es: 'Cabaña alpina tipo A',
+		en: 'A-frame alpine cabin',
+		nes: 'Hasta 5 personas · 4 camas, cocina, refrigeradora, baño privado',
+		nen: 'Up to 5 guests · 4 beds, kitchen, fridge, private bath',
+		cap: 5,
+	},
+	{ es: 'Habitación doble (hospedaje hermano)', en: 'Double room (sister lodge)', nes: 'Baño privado', nen: 'Private bath', cap: 2 },
+	{ es: 'Cabaña familiar (hospedaje hermano)', en: 'Family cabin (sister lodge)', nes: '4 habitaciones · 10 camas', nen: '4 rooms · 10 beds', cap: 10 },
+];
+
+const text = {
+	es: {
+		eyebrow: 'Reserva guiada por WhatsApp',
+		title: 'Arma tu mensaje en tres pasos',
+		unit: '1 · Unidad',
+		dates: '2 · Fechas',
+		checkIn: 'Llegada',
+		checkOut: 'Salida',
+		guests: '3 · Personas',
+		less: 'Menos personas',
+		more: 'Más personas',
+		maxCap: 'Capacidad máxima:',
+		preview: 'Vista previa del mensaje',
+		submit: 'Abrir WhatsApp con mi solicitud',
+		note: `Tarifa referencial de cabaña alpina: $120 por 24 h. Confirmamos disponibilidad y precio por WhatsApp (${contact.whatsappDisplay}).`,
+		hello: 'Hola, quiero reservar en Cabañas Alpinas El Limo.',
+		mUnit: 'Unidad',
+		mIn: 'Llegada',
+		mOut: 'Salida',
+		mGuests: 'Personas',
+		night: 'noche',
+		nights: 'noches',
+		errDates: 'Elige las fechas de llegada y salida.',
+		errOrder: 'La salida debe ser posterior a la llegada.',
+	},
+	en: {
+		eyebrow: 'Guided booking via WhatsApp',
+		title: 'Build your message in three steps',
+		unit: '1 · Unit',
+		dates: '2 · Dates',
+		checkIn: 'Check-in',
+		checkOut: 'Check-out',
+		guests: '3 · Guests',
+		less: 'Fewer guests',
+		more: 'More guests',
+		maxCap: 'Max capacity:',
+		preview: 'Message preview',
+		submit: 'Open WhatsApp with my request',
+		note: `Reference rate for an alpine cabin: $120 per 24 h. We confirm availability and price on WhatsApp (${contact.whatsappDisplay}).`,
+		hello: "Hello, I'd like to book at Cabañas Alpinas El Limo.",
+		mUnit: 'Unit',
+		mIn: 'Check-in',
+		mOut: 'Check-out',
+		mGuests: 'Guests',
+		night: 'night',
+		nights: 'nights',
+		errDates: 'Choose check-in and check-out dates.',
+		errOrder: 'Check-out must be after check-in.',
+	},
+}[lang];
+
+const config = {
+	phone: contact.whatsapp,
+	units: units.map((u) => ({ label: lang === 'es' ? u.es : u.en, cap: u.cap })),
+	t: text,
+};
+const field = 'h-[46px] rounded-sm border border-line bg-bg px-3 text-base text-ink';
+---
+
+<form
+	data-booking={JSON.stringify(config)}
+	aria-labelledby="res-t"
+	novalidate
+	class="flex flex-col gap-6 rounded-lg border border-line bg-card p-[clamp(20px,3vw,36px)] transition-[background] duration-[.6s]"
+>
+	<div class="flex flex-col gap-1.5">
+		<span class="text-xs tracking-[.14em] text-muted uppercase">{text.eyebrow}</span>
+		<h3 id="res-t" class="m-0 font-serif text-[clamp(26px,2.6vw,34px)] leading-[1.15] font-medium">{text.title}</h3>
+	</div>
+
+	<fieldset class="m-0 flex flex-col gap-2.5 border-0 p-0">
+		<legend class="mb-2.5 p-0 font-semibold">{text.unit}</legend>
+		{
+			units.map((u, i) => (
+				<label class="unit flex cursor-pointer items-start gap-3 rounded-md border border-line px-3.5 py-3">
+					<input type="radio" name="unidad" value={i} checked={i === 0} class="mt-[5px] accent-forest" />
+					<span class="flex flex-col">
+						<span class="font-semibold">{lang === 'es' ? u.es : u.en}</span>
+						<span class="text-sm text-muted">{lang === 'es' ? u.nes : u.nen}</span>
+					</span>
+				</label>
+			))
+		}
+	</fieldset>
+
+	<fieldset class="m-0 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3 border-0 p-0">
+		<legend class="mb-2.5 p-0 font-semibold">{text.dates}</legend>
+		<label class="flex flex-col gap-1.5 text-sm text-muted">
+			<span>{text.checkIn}</span>
+			<input type="date" name="llegada" required class={field} />
+		</label>
+		<label class="flex flex-col gap-1.5 text-sm text-muted">
+			<span>{text.checkOut}</span>
+			<input type="date" name="salida" required class={field} />
+		</label>
+	</fieldset>
+
+	<fieldset class="m-0 flex flex-wrap items-center gap-4 border-0 p-0">
+		<legend class="mb-2.5 p-0 font-semibold">{text.guests}</legend>
+		<div class="flex items-center rounded-sm border border-line">
+			<button type="button" data-step="-1" aria-label={text.less} class="size-[46px] cursor-pointer border-0 bg-transparent text-[22px] text-ink">−</button>
+			<output data-people aria-live="polite" class="min-w-11 text-center text-lg font-semibold">2</output>
+			<button type="button" data-step="1" aria-label={text.more} class="size-[46px] cursor-pointer border-0 bg-transparent text-[22px] text-ink">+</button>
+		</div>
+		<span data-cap class="text-sm text-muted">{text.maxCap} {units[0]!.cap}</span>
+	</fieldset>
+
+	<div class="flex flex-col gap-2">
+		<span class="text-[13px] text-muted">{text.preview}</span>
+		<p data-preview class="m-0 rounded-r-sm border-l-[3px] border-forest bg-bg px-4 py-3.5 text-[15px] whitespace-pre-line"></p>
+	</div>
+
+	<p data-error role="alert" class="m-0 text-sm font-semibold text-[#B23A2A] empty:hidden"></p>
+
+	<div class="flex flex-col gap-2.5">
+		<button
+			type="submit"
+			class="flex h-[54px] cursor-pointer items-center justify-between rounded-sm border-0 bg-whatsapp px-[22px] text-base font-semibold text-white hover:bg-whatsapp-hover"
+		>
+			<span>{text.submit}</span><span aria-hidden="true">→</span>
+		</button>
+		<span class="text-[13px] text-muted">{text.note}</span>
+	</div>
+</form>
+
+<style>
+	.unit:has(input:checked) {
+		border-color: var(--forest);
+		background: var(--bg);
+	}
+</style>
+
+<script>
+	interface Config {
+		phone: string;
+		units: { label: string; cap: number }[];
+		t: Record<string, string>;
+	}
+
+	document.querySelectorAll<HTMLFormElement>('form[data-booking]').forEach((form) => {
+		const cfg = JSON.parse(form.dataset.booking!) as Config;
+		const { t } = cfg;
+		const inD = form.elements.namedItem('llegada') as HTMLInputElement;
+		const outD = form.elements.namedItem('salida') as HTMLInputElement;
+		const peopleEl = form.querySelector<HTMLOutputElement>('[data-people]')!;
+		const capEl = form.querySelector<HTMLElement>('[data-cap]')!;
+		const preview = form.querySelector<HTMLElement>('[data-preview]')!;
+		const error = form.querySelector<HTMLElement>('[data-error]')!;
+		let people = 2;
+
+		// Fecha mínima: hoy, en la zona horaria del visitante
+		const now = new Date();
+		const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+		inD.min = today;
+		outD.min = today;
+
+		const unit = () => cfg.units[Number((form.querySelector('input[name=unidad]:checked') as HTMLInputElement).value)]!;
+		const fmt = (d: string) => {
+			if (!d) return '—';
+			const [y, m, dd] = d.split('-');
+			return `${dd}/${m}/${y}`;
+		};
+		const nights = () => (inD.value && outD.value ? Math.round((Date.parse(outD.value) - Date.parse(inD.value)) / 864e5) : 0);
+
+		function message() {
+			const n = nights();
+			const span = n > 0 ? ` (${n} ${n > 1 ? t.nights : t.night})` : '';
+			return `${t.hello}\n${t.mUnit}: ${unit().label}\n${t.mIn}: ${fmt(inD.value)}\n${t.mOut}: ${fmt(outD.value)}${span}\n${t.mGuests}: ${people}`;
+		}
+
+		function render() {
+			const cap = unit().cap;
+			people = Math.max(1, Math.min(people, cap));
+			peopleEl.value = String(people);
+			capEl.textContent = `${t.maxCap} ${cap}`;
+			outD.min = inD.value || today;
+			preview.textContent = message();
+		}
+
+		form.addEventListener('change', () => {
+			error.textContent = '';
+			render();
+		});
+		form.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((b) =>
+			b.addEventListener('click', () => {
+				people += Number(b.dataset.step);
+				render();
+			}),
+		);
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			if (!inD.value || !outD.value) {
+				error.textContent = t.errDates!;
+				return;
+			}
+			if (nights() < 1) {
+				error.textContent = t.errOrder!;
+				return;
+			}
+			window.open(`https://wa.me/${cfg.phone}?text=${encodeURIComponent(message())}`, '_blank', 'noopener');
+		});
+		render();
+	});
+</script>

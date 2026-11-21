@@ -1,0 +1,64 @@
+---
+/**
+ * Contadores con fuente (Plan del sitio). El HTML ya trae el valor final;
+ * el script los anima desde cero al entrar en vista (1.6 s, ease-out cúbico).
+ */
+import type { HomeContent } from '../../data/inicio';
+
+interface Props {
+	t: HomeContent['counters'];
+}
+const { t } = Astro.props;
+---
+
+<section aria-label={t.label} data-counters class="container-site py-[clamp(56px,7vw,104px)]">
+	<dl class="m-0 grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-x-10">
+		{
+			t.items.map((c) => (
+				<div class="flex flex-col-reverse gap-1.5 border-t-2 border-ink pt-5 pb-3">
+					<dt class="max-w-[220px] text-[15.5px] text-muted">{c.label}</dt>
+					<dd class="m-0 font-serif text-figure tracking-[-.02em] tabular-nums">
+						<span data-count={c.value} data-decimals={c.decimals}>
+							{c.value.toFixed(c.decimals)}
+						</span>
+						{c.suffix}
+						{c.unit && <span class="ml-1.5 text-[.4em] text-amber-ink">{c.unit}</span>}
+					</dd>
+				</div>
+			))
+		}
+	</dl>
+</section>
+
+<script>
+	const section = document.querySelector<HTMLElement>('[data-counters]');
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	// Solo se anima si la sección empieza fuera de la pantalla
+	if (section && !reduce && 'IntersectionObserver' in window && section.getBoundingClientRect().top > innerHeight) {
+		const nums = [...section.querySelectorAll<HTMLElement>('[data-count]')].map((el) => ({
+			el,
+			value: Number(el.dataset.count),
+			decimals: Number(el.dataset.decimals),
+		}));
+		const draw = (p: number) => nums.forEach((n) => (n.el.textContent = (n.value * p).toFixed(n.decimals)));
+		draw(0);
+
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (!entries[0]?.isIntersecting) return;
+				io.disconnect();
+				const t0 = performance.now();
+				const dur = 1600;
+				const tick = (now: number) => {
+					const k = Math.min(1, (now - t0) / dur);
+					draw(1 - Math.pow(1 - k, 3));
+					if (k < 1) requestAnimationFrame(tick);
+				};
+				requestAnimationFrame(tick);
+			},
+			{ threshold: 0.35 },
+		);
+		io.observe(section);
+	}
+</script>

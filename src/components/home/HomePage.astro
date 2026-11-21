@@ -1,0 +1,29 @@
+---
+/** Página de Inicio completa; la usan / y /en/. */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from './Hero.astro';
+import Attributes from './Attributes.astro';
+import Counters from './Counters.astro';
+import Cabins from './Cabins.astro';
+import Awards from './Awards.astro';
+import BookingSection from './BookingSection.astro';
+import AirSection from './AirSection.astro';
+import { inicio } from '../../data/inicio';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const c = inicio[lang];
+---
+
+<BaseLayout lang={lang} route="inicio" title={c.meta.title} description={c.meta.description} fullTitle>
+	<Hero lang={lang} t={c.hero} />
+	<Attributes t={c.attrs} />
+	<Counters t={c.counters} />
+	<Cabins lang={lang} t={c.cabins} />
+	<Awards t={c.awards} />
+	<BookingSection lang={lang} t={c.booking} />
+	<AirSection lang={lang} t={c.air} />
+</BaseLayout>
