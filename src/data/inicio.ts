@@ -42,6 +42,12 @@ export interface HomeContent {
 		all: string;
 		items: { eyebrow: string; name: string; text: string; rate: string; alt: string }[];
 	};
+	trifinio: {
+		eyebrow: string;
+		title: string;
+		text: string;
+		more: string;
+	};
 	awards: {
 		title: string;
 		alt: string;
@@ -177,6 +183,12 @@ export const inicio: Record<Lang, HomeContent> = {
 					alt: 'Cabaña de madera con techo verde junto a árboles altos en un día despejado',
 				},
 			],
+		},
+		trifinio: {
+			eyebrow: 'Dormir en una reserva de biosfera',
+			title: 'Tres países, un mismo bosque',
+			text: 'La Reserva de la Biosfera Trifinio Fraternidad es la primera reserva trinacional de América. Estamos en su zona de amortiguamiento, en el cantón El Limo, Metapán.',
+			more: 'Cómo llegar',
 		},
 		awards: {
 			title: 'Reconocimientos y apoyos',
@@ -320,6 +332,12 @@ export const inicio: Record<Lang, HomeContent> = {
 					alt: 'Green-roofed wooden cabin next to tall trees on a clear day',
 				},
 			],
+		},
+		trifinio: {
+			eyebrow: 'Sleep in a biosphere reserve',
+			title: 'Three countries, one forest',
+			text: 'The Trifinio Fraternidad Biosphere Reserve is the first tri-national reserve in the Americas. We are in its buffer zone, in El Limo, Metapán.',
+			more: 'Getting here',
 		},
 		awards: {
 			title: 'Recognition and support',

@@ -18,12 +18,18 @@
     "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.13",
     "qrcode": "^1.5.4",
-    "tailwindcss": "^4.3.5"
+    "tailwindcss": "^4.3.5",
+    "three": "^0.187.0",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@types/node": "^26.6.6",
     "@types/qrcode": "^1.5.6",
+    "@types/three": "^0.187.0",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
     "typescript": "^6.0.3"
   }
 }

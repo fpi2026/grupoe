@@ -6,6 +6,7 @@ import Attributes from './Attributes.astro';
 import Timeline from './Timeline.astro';
 import Counters from './Counters.astro';
 import Cabins from './Cabins.astro';
+import TrifinioSection from './TrifinioSection.astro';
 import Awards from './Awards.astro';
 import BookingSection from './BookingSection.astro';
 import AirSection from './AirSection.astro';
@@ -25,6 +26,7 @@ const c = inicio[lang];
 	<Timeline lang={lang} t={c.timeline} />
 	<Counters t={c.counters} />
 	<Cabins lang={lang} t={c.cabins} />
+	<TrifinioSection lang={lang} t={c.trifinio} />
 	<Awards t={c.awards} />
 	<BookingSection lang={lang} t={c.booking} />
 	<AirSection lang={lang} t={c.air} />

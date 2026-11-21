@@ -24,5 +24,8 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // three.js (mapa del Trifinio) pesa ~560 KB, pero se carga aparte y solo
+    // cuando el mapa se acerca a la pantalla.
+    build: { chunkSizeWarningLimit: 700 },
   },
 });

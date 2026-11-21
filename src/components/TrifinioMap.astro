@@ -1,0 +1,265 @@
+---
+/**
+ * Mapa 3D en relieve del Trifinio (MapaTrifinio.dc.html + Mapa3D.html).
+ * Los límites de países se recortan a la zona al compilar; el relieve y la
+ * imagen satelital se descargan en el navegador cuando el mapa se acerca a la pantalla.
+ */
+import { mesh } from 'topojson-client';
+import type { Topology, GeometryCollection } from 'topojson-specification';
+import countries from 'world-atlas/countries-10m.json';
+import type { Lang } from '../i18n/ui';
+import type { Lng, Place } from '../scripts/trifinio-map';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const es = lang === 'es';
+
+// Fronteras entre países (Natural Earth) que pasan cerca de la zona del mapa
+const topo = countries as unknown as Topology<{ countries: GeometryCollection }>;
+const B = { w: -89.64, e: -89.12, s: 14.19, n: 14.62 };
+const near = ([lo, la]: number[]) => lo! > B.w - 0.3 && lo! < B.e + 0.3 && la! > B.s - 0.3 && la! < B.n + 0.3;
+const borders: Lng[][] = mesh(topo, topo.objects.countries, (a, b) => a !== b)
+	.coordinates.filter((line) => line.some(near))
+	.map((line) => line.map(([lo, la]) => [Math.round(lo! * 1e4) / 1e4, Math.round(la! * 1e4) / 1e4] as Lng));
+
+// Ubicaciones aproximadas (como en el diseño)
+const places: Place[] = [
+	{ t: 'home', lon: -89.405, lat: 14.378, label: 'Cabañas Alpinas', sub: es ? 'Cantón El Limo, Metapán' : 'El Limo, Metapán', lift: 0.02 },
+	{ t: 'tri', lon: -89.358, lat: 14.421, label: es ? 'Trifinio · Cerro Montecristo' : 'Trifinio · Montecristo summit', lift: 0.04 },
+	{ t: 'pt', lon: -89.448, lat: 14.333, label: 'Metapán', lift: 0.03 },
+	{ t: 'pt', lon: -89.348, lat: 14.566, label: 'Esquipulas', lift: 0.03 },
+	{ t: 'pt', lon: -89.182, lat: 14.433, label: 'Ocotepeque', lift: 0.03 },
+	{ t: 'pt', lon: -89.53, lat: 14.29, label: es ? 'Lago de Güija' : 'Lake Güija', lift: 0.03 },
+	{ t: 'ctry', lon: -89.56, lat: 14.49, label: 'GUATEMALA', lift: 0.25 },
+	{ t: 'ctry', lon: -89.22, lat: 14.54, label: 'HONDURAS', lift: 0.25 },
+	{ t: 'ctry', lon: -89.33, lat: 14.25, label: 'EL SALVADOR', lift: 0.25 },
+];
+
+const t = es
+	? {
+			title: 'Mapa 3D en relieve del Trifinio: El Salvador, Guatemala y Honduras. Cabañas Alpinas está en El Limo, Metapán, del lado salvadoreño.',
+			zoomIn: 'Acercar',
+			zoomOut: 'Alejar',
+			reset: 'Restablecer vista',
+			hint: 'Arrastra para girar el relieve',
+			loading: 'Cargando relieve…',
+			error: 'No se pudo cargar el relieve. Revisa tu conexión.',
+			caption: 'Relieve real con exageración vertical ×2. Límites y ubicaciones aproximados.',
+			credits: 'Relieve: AWS Terrain Tiles · Imágenes: Esri, Maxar, Earthstar · Límites: Natural Earth',
+		}
+	: {
+			title: '3D relief map of the Trifinio: El Salvador, Guatemala and Honduras. Cabañas Alpinas is in El Limo, Metapán, on the Salvadoran side.',
+			zoomIn: 'Zoom in',
+			zoomOut: 'Zoom out',
+			reset: 'Reset view',
+			hint: 'Drag to rotate the terrain',
+			loading: 'Loading terrain…',
+			error: 'The terrain could not be loaded. Check your connection.',
+			caption: 'Real terrain with 2× vertical exaggeration. Borders and locations are approximate.',
+			credits: 'Terrain: AWS Terrain Tiles · Imagery: Esri, Maxar, Earthstar · Borders: Natural Earth',
+		};
+---
+
+<figure class="m-0 flex flex-col gap-3">
+	<div
+		data-trifinio
+		data-borders={JSON.stringify(borders)}
+		data-places={JSON.stringify(places)}
+		data-error={t.error}
+		role="img"
+		aria-label={t.title}
+		class="map relative aspect-[5/4] min-h-[360px] overflow-hidden"
+	>
+		<div data-stage class="absolute inset-0 cursor-grab active:cursor-grabbing"></div>
+		<div data-labels class="pointer-events-none absolute inset-0 overflow-hidden"></div>
+		<div class="ui zm">
+			<button type="button" data-zoom-in aria-label={t.zoomIn}>+</button>
+			<button type="button" data-zoom-out aria-label={t.zoomOut}>−</button>
+			<button type="button" data-reset aria-label={t.reset} class="text-[15px]">⟲</button>
+		</div>
+		<div class="ui hint">{t.hint}</div>
+		<div class="ui attr">{t.credits}</div>
+		<div data-load class="absolute inset-0 z-3 grid place-items-center text-[13px] text-muted transition-opacity duration-500">
+			<span>{t.loading}</span>
+		</div>
+	</div>
+	<figcaption class="text-[13px] text-muted">{t.caption}</figcaption>
+</figure>
+
+<style>
+	.map :global(canvas) {
+		display: block;
+	}
+	.map :global(.l) {
+		position: absolute;
+		left: 0;
+		top: 0;
+		white-space: nowrap;
+		will-change: transform;
+	}
+	.map :global(.pt) {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		transform: translate(-5px, -50%);
+		font-size: 12.5px;
+		font-weight: 600;
+		color: #fff;
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.5);
+	}
+	.map :global(.pt i) {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.6);
+		flex: none;
+	}
+	.map :global(.pt.tri i) {
+		background: var(--forest);
+		box-shadow: 0 0 0 2px #fff;
+	}
+	.map :global(.home) {
+		transform: translate(-50%, -100%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.map :global(.home b) {
+		display: block;
+		background: var(--amber);
+		color: #1c2620;
+		font-size: 13px;
+		font-weight: 700;
+		padding: 6px 10px;
+		border-radius: 6px;
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+	}
+	.map :global(.home b small) {
+		display: block;
+		font-weight: 500;
+		font-size: 11.5px;
+	}
+	.map :global(.home s) {
+		display: block;
+		width: 2px;
+		height: 52px;
+		background: var(--amber);
+		text-decoration: none;
+	}
+	.map :global(.home u) {
+		display: block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--amber);
+		border: 2px solid #1c2620;
+		margin-top: -4px;
+	}
+	.map :global(.ctry) {
+		transform: translate(-50%, -50%);
+		font-size: 13px;
+		letter-spacing: 0.2em;
+		font-weight: 700;
+		color: #fff;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.55);
+	}
+	.ui {
+		position: absolute;
+		display: flex;
+		gap: 6px;
+		z-index: 2;
+	}
+	.zm {
+		top: 12px;
+		right: 12px;
+		flex-direction: column;
+	}
+	.zm button {
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		border: 1px solid var(--line);
+		background: color-mix(in oklab, var(--card) 92%, transparent);
+		color: var(--ink);
+		font: 600 18px/1 var(--font-sans);
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+	}
+	.zm button:hover {
+		background: var(--surface);
+	}
+	.hint {
+		bottom: 10px;
+		left: 12px;
+		font-size: 12px;
+		color: var(--muted);
+		background: color-mix(in oklab, var(--card) 88%, transparent);
+		padding: 4px 8px;
+		border-radius: 6px;
+	}
+	.attr {
+		bottom: 10px;
+		right: 12px;
+		font-size: 10.5px;
+		color: var(--muted);
+		background: color-mix(in oklab, var(--card) 88%, transparent);
+		padding: 3px 6px;
+		border-radius: 4px;
+		max-width: 60%;
+		text-align: right;
+	}
+	@media (max-width: 480px) {
+		.hint {
+			display: none;
+		}
+		.attr {
+			max-width: 90%;
+		}
+	}
+</style>
+
+<script>
+	import type { Lng, Place } from '../scripts/trifinio-map';
+
+	document.querySelectorAll<HTMLElement>('[data-trifinio]').forEach((root) => {
+		const load = root.querySelector<HTMLElement>('[data-load]')!;
+		let started = false;
+
+		async function start() {
+			if (started) return;
+			started = true;
+			try {
+				const { initTrifinioMap } = await import('../scripts/trifinio-map');
+				await initTrifinioMap({
+					stage: root.querySelector<HTMLElement>('[data-stage]')!,
+					labels: root.querySelector<HTMLElement>('[data-labels]')!,
+					borders: JSON.parse(root.dataset.borders ?? '[]') as Lng[][],
+					places: JSON.parse(root.dataset.places ?? '[]') as Place[],
+					zoomIn: root.querySelector<HTMLButtonElement>('[data-zoom-in]')!,
+					zoomOut: root.querySelector<HTMLButtonElement>('[data-zoom-out]')!,
+					reset: root.querySelector<HTMLButtonElement>('[data-reset]')!,
+				});
+				load.style.opacity = '0';
+				setTimeout(() => load.remove(), 500);
+			} catch {
+				load.textContent = root.dataset.error ?? '';
+			}
+		}
+
+		// Carga diferida: three.js y el relieve solo cuando el mapa se acerca
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					io.disconnect();
+					start();
+				}
+			},
+			{ rootMargin: '400px 0px' },
+		);
+		io.observe(root);
+	});
+</script>
