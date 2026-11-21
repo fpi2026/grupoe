@@ -1,0 +1,256 @@
+/*
+ * Estilos globales de Cabañas Alpinas El Limo.
+ * Fuente de verdad: diseno/site.css y diseno/tokens-astro-tailwind.md.
+ * Los temas se activan con data-theme="day|night" en <html>.
+ */
+@import "tailwindcss";
+
+/* Fuentes autoalojadas (Fontsource, variables) */
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
+@import "@fontsource-variable/hanken-grotesk/wght.css";
+
+/* ---------- Variables de tema ---------- */
+:root {
+  --bg: #f1ece1;
+  --surface: #e7e0d0;
+  --card: #f8f5ee;
+  --ink: #1c2620;
+  --muted: #4c564f;
+  --line: #cfc6b3;
+  --forest: #2d5a35;
+  --on-forest: #f6f2e8;
+  --wood: #8a5a36;
+  --amber: #d9962e;
+  --amber-ink: #8a5410;
+  --btn: #2d5a35;
+  --btn-ink: #f6f2e8;
+  --fog: rgba(246, 242, 233, 0.55);
+  /* Para mostrar u ocultar elementos según el tema (como en el diseño) */
+  --day: 1;
+  --night: 0;
+  --is-day: inline-flex;
+  --is-night: none;
+  color-scheme: light;
+}
+
+:root[data-theme="night"] {
+  --bg: #0d1410;
+  --surface: #141e18;
+  --card: #18241d;
+  --ink: #ece5d4;
+  --muted: #b5af9f;
+  --line: #2f3d33;
+  --forest: #93c08b;
+  --on-forest: #0d1410;
+  --wood: #c9925f;
+  --amber: #f0b04a;
+  --amber-ink: #f0b04a;
+  --btn: #f0b04a;
+  --btn-ink: #1a1206;
+  --fog: rgba(190, 205, 195, 0.14);
+  --day: 0;
+  --night: 1;
+  --is-day: none;
+  --is-night: inline-flex;
+  color-scheme: dark;
+}
+
+/* ---------- Tokens de Tailwind ---------- */
+@theme inline {
+  /* Colores que cambian con el tema */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-forest: var(--forest);
+  --color-on-forest: var(--on-forest);
+  --color-wood: var(--wood);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-btn: var(--btn);
+  --color-btn-ink: var(--btn-ink);
+  --color-fog: var(--fog);
+}
+
+@theme {
+  /* WhatsApp (igual en ambos temas) */
+  --color-whatsapp: #1e6b38;
+  --color-whatsapp-hover: #185a2f;
+
+  /* Niveles del ICA (todos con texto blanco) */
+  --color-ica-buena: #2f7d3c;
+  --color-ica-moderada: #a8861a;
+  --color-ica-sensibles: #c2611f;
+  --color-ica-danina: #b23a2a;
+  --color-ica-muy-danina: #7b3f8c;
+  --color-ica-peligrosa: #6b2424;
+
+  /* Tipografía */
+  --font-serif: "Newsreader Variable", "Newsreader", serif;
+  --font-sans: "Hanken Grotesk Variable", "Hanken Grotesk", system-ui, sans-serif;
+
+  --text-display: clamp(46px, 7.4vw, 112px);
+  --text-display--line-height: 0.98;
+  --text-h1: clamp(44px, 6.4vw, 96px);
+  --text-h1--line-height: 0.98;
+  --text-h2: clamp(34px, 4.6vw, 64px);
+  --text-h2--line-height: 1.04;
+  --text-h3: clamp(25px, 2.4vw, 34px);
+  --text-h3--line-height: 1.15;
+  --text-figure: clamp(56px, 6.4vw, 92px);
+  --text-figure--line-height: 1;
+  --text-body: 17px;
+  --text-body--line-height: 1.6;
+  --text-small: 14px;
+  --text-small--line-height: 1.5;
+  --text-eyebrow: 12.5px;
+  --text-eyebrow--letter-spacing: 0.16em;
+  --text-eyebrow--font-weight: 600;
+
+  /* Radios */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  /* Contenedor */
+  --container-site: 1360px;
+
+  /* Neblina */
+  --animate-fog-a: fogA 38s ease-in-out infinite alternate;
+  --animate-fog-b: fogB 52s ease-in-out infinite alternate;
+  --animate-fog-c: fogA 70s ease-in-out infinite alternate;
+  --animate-pulse-soft: pulse 2s ease-in-out infinite;
+
+  @keyframes fogA {
+    from { transform: translateX(-14%); }
+    to { transform: translateX(14%); }
+  }
+  @keyframes fogB {
+    from { transform: translateX(12%); }
+    to { transform: translateX(-12%); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    transition: background-color 0.6s, color 0.6s;
+    /* Grano de papel */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.06'/></svg>");
+  }
+
+  a {
+    color: var(--forest);
+  }
+  a:hover {
+    color: var(--amber-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--amber);
+    outline-offset: 3px;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+}
+
+/* ---------- Utilidades del diseño ---------- */
+
+/* Contenedor de 1360 px con márgenes laterales fluidos */
+@utility container-site {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 56px);
+}
+
+/* Padding vertical de sección */
+@utility section-y {
+  padding-block: clamp(64px, 9vw, 136px);
+}
+
+/* Antetítulo: mayúsculas, tracking amplio */
+@utility eyebrow {
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+  font-weight: var(--text-eyebrow--font-weight);
+  text-transform: uppercase;
+}
+
+/* Neblina: contenedor + 3 capas (ver src/components/Fog.astro) */
+@utility fog {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@utility fog-layer {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  height: 55%;
+  background:
+    radial-gradient(ellipse 40% 50% at 30% 50%, var(--fog), transparent 70%),
+    radial-gradient(ellipse 35% 45% at 72% 45%, var(--fog), transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+/* ---------- Transición entre páginas (logo al centro) ---------- */
+html.cael-tr body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9998;
+  animation: caelSafe 0.3s 3s forwards;
+}
+
+@keyframes caelSafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
+import tailwindcss from '@tailwindcss/vite';
+
 // Publicación en GitHub Pages de la organización: https://fpi2026.github.io/grupoe/
 // SITE_URL y BASE_PATH permiten cambiar el destino (por ejemplo, un dominio propio) sin tocar el código.
 const site = process.env.SITE_URL ?? 'https://fpi2026.github.io';
@@ -12,4 +14,8 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'ignore',
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

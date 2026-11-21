@@ -1,8 +1,11 @@
 ---
+import '../styles/global.css';
+import Fog from '../components/Fog.astro';
+
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
-<html lang="es">
+<html lang="es" data-theme="day">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
@@ -12,7 +15,17 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 		<title>Cabañas Alpinas El Limo</title>
 	</head>
 	<body>
-		<h1>Cabañas Alpinas El Limo</h1>
-		<p>Sitio en construcción · Propuesta académica – UES-FMOcc</p>
+		<main>
+			<section class="relative overflow-hidden bg-surface section-y">
+				<Fog />
+				<div class="container-site relative flex flex-col gap-6">
+					<p class="eyebrow text-amber-ink">Sitio en construcción</p>
+					<h1 class="font-serif text-display font-normal">
+						Cabañas Alpinas <em class="font-light">El Limo</em>
+					</h1>
+					<p class="max-w-2xl text-muted">Propuesta académica – UES-FMOcc</p>
+				</div>
+			</section>
+		</main>
 	</body>
 </html>
