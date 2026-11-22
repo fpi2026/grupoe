@@ -1,0 +1,84 @@
+---
+/** Página de Gastronomía (Gastronomia.dc.html); la usan /gastronomia/ y /en/food/. */
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import desayuno from '../../assets/img/desayuno.jpg';
+import desayuno2 from '../../assets/img/desayuno-2.jpg';
+import terrazaNoche from '../../assets/img/terraza-noche.jpg';
+import estantes from '../../assets/img/estantes.jpg';
+import { gastronomia } from '../../data/gastronomia';
+import { contact, type Lang } from '../../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const c = gastronomia[lang];
+const gallery = [desayuno2, terrazaNoche, estantes];
+const wa = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(c.cta.message)}`;
+---
+
+<BaseLayout lang={lang} route="gastronomia" title={c.meta.title} description={c.meta.description}>
+	<section class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-center gap-[clamp(32px,5vw,80px)] py-[clamp(56px,8vw,112px)]">
+		<div class="flex flex-col gap-[18px]">
+			<span class="eyebrow text-amber-ink">{c.intro.eyebrow}</span>
+			<h1 class="m-0 font-serif text-h1 font-normal tracking-[-.02em]">
+				{c.intro.titleA} <em>{c.intro.titleB}</em>
+			</h1>
+			<p class="m-0 max-w-[480px] text-pretty text-muted">{c.intro.lead}</p>
+			<p class="m-0 border-l-[3px] border-amber pl-3.5 font-semibold">{c.intro.note}</p>
+		</div>
+		<Image
+			src={desayuno}
+			alt={c.intro.alt}
+			widths={[480, 720, 960, 1280]}
+			sizes="(min-width: 960px) 600px, 100vw"
+			loading="eager"
+			class="aspect-[4/5] w-full rounded-lg object-cover"
+		/>
+	</section>
+
+	<section aria-labelledby="men-t" class="bg-surface transition-[background] duration-[.6s]">
+		<div class="container-site py-[clamp(64px,8vw,120px)]">
+			<h2 id="men-t" class="mt-0 mb-9 font-serif text-[clamp(34px,4.4vw,60px)] font-normal">{c.menu.title}</h2>
+			<ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-10 p-0">
+				{
+					c.menu.items.map((d) => (
+						<li class="flex flex-col gap-2 border-t-2 border-ink pt-5 pb-7">
+							<h3 class="m-0 font-serif text-[28px] font-medium">{d.title}</h3>
+							<p class="m-0 text-muted">{d.text}</p>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</section>
+
+	<section aria-label={c.photosLabel} class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-3 py-[clamp(64px,8vw,120px)]">
+		{
+			gallery.map((src, i) => (
+				<Image
+					src={src}
+					alt={c.photos[i]!}
+					widths={[480, 720, 960]}
+					sizes="(min-width: 960px) 440px, 100vw"
+					class="aspect-[4/3] w-full rounded-lg object-cover"
+				/>
+			))
+		}
+	</section>
+
+	<section class="container-site pb-[clamp(72px,9vw,128px)]">
+		<div class="flex flex-wrap items-center justify-between gap-5 border-t border-line pt-8">
+			<p class="m-0 max-w-[640px] font-serif text-[clamp(24px,2.6vw,34px)]">{c.cta.text}</p>
+			<a
+				href={wa}
+				target="_blank"
+				rel="noopener"
+				class="inline-flex h-[52px] items-center gap-3.5 rounded-sm bg-btn px-[22px] font-semibold text-btn-ink no-underline hover:text-btn-ink hover:brightness-110"
+			>
+				<span>{c.cta.button}</span><span aria-hidden="true">→</span>
+			</a>
+		</div>
+	</section>
+</BaseLayout>
