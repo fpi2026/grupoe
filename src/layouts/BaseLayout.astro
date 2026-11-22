@@ -19,18 +19,25 @@ interface Props {
 	description?: string;
 	/** Usar el título tal cual, sin agregar el nombre del sitio. */
 	fullTitle?: boolean;
+	/** Rutas propias por idioma (con BASE_URL), p. ej. el detalle de una noticia. Sustituyen a las de `route`. */
+	paths?: Partial<Record<Lang, string>>;
+	/** Imagen para compartir (URL absoluta o ruta con BASE_URL). */
+	image?: string;
+	/** Tipo para Open Graph. */
+	ogType?: 'website' | 'article';
 }
 
-const { lang, route, title, description, fullTitle: useTitleAsIs = false } = Astro.props;
+const { lang, route, title, description, fullTitle: useTitleAsIs = false, paths = {}, image, ogType = 'website' } = Astro.props;
 const t = useTranslations(lang);
 const siteName = t('site.name');
 const fullTitle = title ? (useTitleAsIs ? title : `${title} · ${siteName}`) : siteName;
 const desc = description ?? t('site.description');
-const canonical = new URL(localizedPath(route, lang), Astro.site);
-const alternates = (Object.keys(languages) as Lang[]).map((l) => ({
-	lang: l,
-	href: new URL(localizedPath(route, l), Astro.site).href,
-}));
+const pathFor = (l: Lang) => paths[l] ?? localizedPath(route, l);
+const canonical = new URL(pathFor(lang), Astro.site);
+// Con rutas propias, solo se anuncian los idiomas que existen
+const alternates = (Object.keys(languages) as Lang[])
+	.filter((l) => !Object.keys(paths).length || paths[l])
+	.map((l) => ({ lang: l, href: new URL(pathFor(l), Astro.site).href }));
 ---
 
 <!doctype html>
@@ -43,8 +50,9 @@ const alternates = (Object.keys(languages) as Lang[]).map((l) => ({
 		<meta name="description" content={desc} />
 		<link rel="canonical" href={canonical.href} />
 		{alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
-		<link rel="alternate" hreflang="x-default" href={alternates.find((a) => a.lang === 'es')?.href} />
-		<meta property="og:type" content="website" />
+		<link rel="alternate" hreflang="x-default" href={(alternates.find((a) => a.lang === 'es') ?? alternates[0])?.href} />
+		<meta property="og:type" content={ogType} />
+		{image && <meta property="og:image" content={new URL(image, Astro.site).href} />}
 		<meta property="og:site_name" content={siteName} />
 		<meta property="og:title" content={fullTitle} />
 		<meta property="og:description" content={desc} />
@@ -64,7 +72,7 @@ const alternates = (Object.keys(languages) as Lang[]).map((l) => ({
 		</script>
 	</head>
 	<body>
-		<Header lang={lang} route={route} />
+		<Header lang={lang} route={route} paths={paths} />
 		<main id="contenido" tabindex="-1">
 			<slot />
 		</main>

@@ -11,8 +11,10 @@ import { localizedPath, useTranslations } from '../i18n/utils';
 interface Props {
 	lang: Lang;
 	route: RouteKey;
+	/** Rutas propias por idioma; si falta un idioma, el botón lleva a la página de `route`. */
+	paths?: Partial<Record<Lang, string>>;
 }
-const { lang, route } = Astro.props;
+const { lang, route, paths = {} } = Astro.props;
 const t = useTranslations(lang);
 const langs = Object.keys(languages) as Lang[];
 ---
@@ -45,7 +47,7 @@ const langs = Object.keys(languages) as Lang[];
 						const current = l === lang;
 						return (
 							<a
-								href={localizedPath(route, l)}
+								href={paths[l] ?? localizedPath(route, l)}
 								hreflang={l}
 								lang={l}
 								aria-current={current ? 'true' : undefined}

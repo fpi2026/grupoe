@@ -1,0 +1,111 @@
+---
+/** Lista de noticias con filtro por etiqueta (Noticias.dc.html); la usan /noticias/ y /en/news/. */
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { newsTags, noticiasUI, formatDate, type NewsTag } from '../../data/noticias';
+import { getNews, newsPath, parseId } from '../../lib/noticias';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = noticiasUI[lang];
+const news = await getNews(lang);
+// Solo las etiquetas que tienen noticias, en el orden de newsTags
+const used = (Object.keys(newsTags) as NewsTag[])
+	.map((id) => ({ id, label: newsTags[id][lang], count: news.filter((n) => n.data.etiquetas.includes(id)).length }))
+	.filter((tag) => tag.count > 0);
+---
+
+<BaseLayout lang={lang} route="noticias" title={t.title} description={t.description}>
+	<div data-news class="container-site flex min-h-[70vh] flex-col gap-[clamp(32px,4vw,56px)] pt-[clamp(56px,8vw,112px)] pb-[clamp(72px,9vw,128px)]">
+		<h1 class="m-0 font-serif text-[clamp(44px,6.4vw,96px)] leading-[.98] font-normal tracking-[-.02em]">{t.title}</h1>
+
+		{
+			used.length > 1 && (
+				<div role="group" aria-label={t.filterLabel} data-filters class="hidden flex-wrap gap-2">
+					<button type="button" data-tag="all" aria-pressed="true" class="chip">
+						{t.all} <span class="font-normal opacity-60">{news.length}</span>
+					</button>
+					{used.map((tag) => (
+						<button type="button" data-tag={tag.id} aria-pressed="false" class="chip">
+							{tag.label} <span class="font-normal opacity-60">{tag.count}</span>
+						</button>
+					))}
+				</div>
+			)
+		}
+
+		{news.length === 0 && <p class="m-0 text-muted">{t.empty}</p>}
+
+		<ul class="m-0 flex list-none flex-col p-0">
+			{
+				news.map((n) => {
+					const { slug } = parseId(n.id);
+					const tag = n.data.etiquetas[0]!;
+					return (
+						<li data-tags={n.data.etiquetas.join(' ')} class="border-t border-line">
+							<a
+								href={newsPath(lang, slug)}
+								class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] items-center gap-x-10 gap-y-4 py-6 text-ink no-underline transition-[background] hover:bg-[color-mix(in_oklab,var(--color-surface)_60%,transparent)] hover:text-ink"
+							>
+								<Image
+									src={n.data.portada}
+									alt=""
+									widths={[360, 540, 720]}
+									sizes="(min-width: 640px) 360px, 100vw"
+									class="aspect-[3/2] w-full max-w-[360px] rounded-md object-cover"
+								/>
+								<div class="flex flex-col gap-2.5 sm:col-span-2">
+									<span class="eyebrow text-amber-ink">
+										{newsTags[tag][lang]} · <time datetime={n.data.fecha.toISOString().slice(0, 10)}>{formatDate(n.data.fecha, lang)}</time>
+									</span>
+									<h2 class="m-0 font-serif text-[clamp(26px,2.8vw,36px)] leading-[1.15] font-medium text-balance">{n.data.titulo}</h2>
+									<p class="m-0 max-w-[640px] text-muted">{n.data.resumen}</p>
+								</div>
+							</a>
+						</li>
+					);
+				})
+			}
+		</ul>
+	</div>
+</BaseLayout>
+
+<style>
+	.chip {
+		height: 40px;
+		padding: 0 16px;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		background: transparent;
+		color: var(--ink);
+		font-size: 14.5px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	.chip[aria-pressed='true'] {
+		border-color: var(--ink);
+		background: var(--ink);
+		color: var(--bg);
+	}
+</style>
+
+<script>
+	// Filtro por etiqueta; sin JavaScript se muestran todas y los botones quedan ocultos
+	document.querySelectorAll<HTMLElement>('[data-news]').forEach((root) => {
+		const group = root.querySelector<HTMLElement>('[data-filters]');
+		if (!group) return;
+		group.classList.replace('hidden', 'flex');
+		const chips = [...group.querySelectorAll<HTMLButtonElement>('[data-tag]')];
+		const items = [...root.querySelectorAll<HTMLElement>('[data-tags]')];
+		chips.forEach((chip) =>
+			chip.addEventListener('click', () => {
+				const tag = chip.dataset.tag!;
+				chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+				items.forEach((li) => (li.hidden = tag !== 'all' && !li.dataset.tags!.split(' ').includes(tag)));
+			}),
+		);
+	});
+</script>

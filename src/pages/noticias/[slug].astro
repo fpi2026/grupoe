@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from 'astro';
+import NewsArticlePage from '../../components/news/NewsArticlePage.astro';
+import { getNews, parseId } from '../../lib/noticias';
+
+export const getStaticPaths = (async () => {
+	const [mine, other] = await Promise.all([getNews('es'), getNews('en')]);
+	const otherSlugs = new Set(other.map((n) => parseId(n.id).slug));
+	return mine.map((entry) => {
+		const { slug } = parseId(entry.id);
+		const langs = otherSlugs.has(slug) ? (['es', 'en'] as const) : (['es'] as const);
+		return { params: { slug }, props: { entry, langs: [...langs] } };
+	});
+}) satisfies GetStaticPaths;
+
+const { entry, langs } = Astro.props;
+---
+
+<NewsArticlePage entry={entry} langs={langs} />

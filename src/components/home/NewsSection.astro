@@ -1,0 +1,43 @@
+---
+/** Últimas noticias en Inicio: las 3 más recientes publicadas. Si no hay, no se muestra. */
+import { Image } from 'astro:assets';
+import { newsTags, noticiasUI } from '../../data/noticias';
+import { getNews, newsPath, parseId } from '../../lib/noticias';
+import { localizedPath } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = noticiasUI[lang];
+const news = (await getNews(lang)).slice(0, 3);
+---
+
+{
+	news.length > 0 && (
+		<section aria-labelledby="not-t" class="container-site py-[clamp(72px,9vw,128px)]">
+			<div class="mb-10 flex flex-wrap items-end justify-between gap-6">
+				<h2 id="not-t" class="m-0 font-serif text-h2 font-normal">{t.latest}</h2>
+				<a href={localizedPath('noticias', lang)} class="font-semibold">{t.allNews} →</a>
+			</div>
+			<ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-8 p-0">
+				{news.map((n) => (
+					<li>
+						<a href={newsPath(lang, parseId(n.id).slug)} class="flex flex-col gap-3.5 text-ink no-underline hover:text-ink hover:opacity-85">
+							<Image
+								src={n.data.portada}
+								alt=""
+								widths={[400, 600, 800]}
+								sizes="(min-width: 1360px) 420px, (min-width: 700px) 45vw, 100vw"
+								class="aspect-[3/2] w-full rounded-md object-cover"
+							/>
+							<span class="eyebrow text-amber-ink">{newsTags[n.data.etiquetas[0]!][lang]}</span>
+							<h3 class="m-0 font-serif text-[25px] leading-[1.2] font-medium text-balance">{n.data.titulo}</h3>
+						</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}
