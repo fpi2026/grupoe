@@ -1,0 +1,170 @@
+---
+/**
+ * Página Cómo llegar y contacto (Contacto.dc.html); la usan /contacto/ y /en/getting-here/.
+ * El formulario arma un mensaje y lo abre en wa.me: no guarda ni envía datos a otro lado.
+ */
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TrifinioMap from '../TrifinioMap.astro';
+import entrada from '../../assets/img/entrada.jpg';
+import { contacto } from '../../data/contacto';
+import { contact, type Lang } from '../../i18n/ui';
+import { whatsappUrl } from '../../i18n/utils';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const c = contacto[lang];
+const f = c.form;
+const maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Cabañas Alpinas El Limo Metapán');
+const field = 'rounded-sm border border-line bg-bg px-3.5 text-base font-normal text-ink aria-invalid:border-[#B23A2A]';
+const cfg = { phone: contact.whatsapp, phoneDisplay: contact.whatsappDisplay, t: f };
+---
+
+<BaseLayout lang={lang} route="contacto" title={c.meta.title} description={c.meta.description}>
+	<section class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-center gap-[clamp(32px,5vw,80px)] pt-[clamp(56px,8vw,112px)] pb-[clamp(56px,7vw,96px)]">
+		<div class="flex flex-col gap-5">
+			<span class="eyebrow text-amber-ink">{c.intro.eyebrow}</span>
+			<h1 class="m-0 font-serif text-[clamp(44px,6.4vw,96px)] leading-[.98] font-normal tracking-[-.02em]">
+				{c.intro.titleA} <em>{c.intro.titleB}</em>
+			</h1>
+			<dl class="m-0 flex flex-col">
+				{
+					c.facts.map((d) => (
+						<div class="grid gap-x-3 gap-y-1 border-t border-line py-3.5 sm:grid-cols-[170px_1fr]">
+							<dt class="text-muted">{d.k}</dt>
+							<dd class="m-0">{d.v}</dd>
+						</div>
+					))
+				}
+				<div class="grid gap-x-3 gap-y-1 border-t border-line py-3.5 sm:grid-cols-[170px_1fr]">
+					<dt class="text-muted">WhatsApp</dt>
+					<dd class="m-0"><a href={whatsappUrl(lang)} target="_blank" rel="noopener">{contact.whatsappDisplay}</a></dd>
+				</div>
+			</dl>
+			<p role="note" class="m-0 flex items-start gap-3 rounded-md border border-amber bg-[color-mix(in_oklab,var(--color-amber)_10%,transparent)] px-[18px] py-4">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" class="mt-[3px] flex-none text-amber-ink">
+					<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0ZM12 9v4M12 17h.01"></path>
+				</svg>
+				<span>{c.access}</span>
+			</p>
+			<a href={maps} target="_blank" rel="noopener" class="font-semibold">{c.mapsLink} →</a>
+		</div>
+		<TrifinioMap lang={lang} />
+	</section>
+
+	<section aria-label={c.photo.label} class="container-site">
+		<figure class="m-0 flex flex-col gap-2.5">
+			<Image
+				src={entrada}
+				alt={c.photo.alt}
+				widths={[720, 1080, 1440, 1920]}
+				sizes="(min-width: 1360px) 1248px, 100vw"
+				class="aspect-[21/9] w-full rounded-lg object-cover"
+			/>
+			<figcaption class="text-sm text-muted">{c.photo.caption}</figcaption>
+		</figure>
+	</section>
+
+	<section aria-labelledby="fm-t" class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-[clamp(32px,5vw,80px)] py-[clamp(64px,8vw,120px)]">
+		<div class="flex flex-col gap-3.5">
+			<h2 id="fm-t" class="m-0 font-serif text-h2 leading-[1.04] font-normal">{f.title}</h2>
+			<p class="m-0 max-w-[440px] text-muted">{f.lead}</p>
+		</div>
+
+		<div data-contact={JSON.stringify(cfg)}>
+			<div data-sent role="status" hidden class="flex flex-col gap-3 rounded-lg border border-forest bg-card p-8">
+				<p data-thanks class="m-0 font-serif text-[30px]"></p>
+				<p data-sent-text class="m-0 text-muted"></p>
+				<button type="button" data-again class="h-11 self-start rounded-sm border border-line bg-transparent px-4 font-semibold text-ink">
+					{f.again}
+				</button>
+			</div>
+
+			<form
+				novalidate
+				class="flex flex-col gap-[18px] rounded-lg border border-line bg-card p-[clamp(20px,3vw,36px)] transition-[background] duration-[.6s]"
+			>
+				<label class="flex flex-col gap-1.5 text-sm font-semibold">
+					<span>{f.name}</span>
+					<input name="nombre" autocomplete="name" required class:list={[field, 'h-12']} />
+				</label>
+				<label class="flex flex-col gap-1.5 text-sm font-semibold">
+					<span>{f.email}</span>
+					<input name="correo" type="email" autocomplete="email" class:list={[field, 'h-12']} />
+				</label>
+				<label class="flex flex-col gap-1.5 text-sm font-semibold">
+					<span>{f.message}</span>
+					<textarea name="mensaje" rows="5" required class:list={[field, 'resize-y py-3']}></textarea>
+				</label>
+				<p data-error role="alert" class="m-0 text-sm font-semibold text-[#B23A2A] empty:hidden"></p>
+				<noscript>
+					<p class="m-0 text-sm">
+						{f.noJs} <a href={whatsappUrl(lang)} target="_blank" rel="noopener">{contact.whatsappDisplay}</a>
+					</p>
+				</noscript>
+				<button
+					type="submit"
+					class="flex h-[52px] items-center justify-between rounded-sm border-0 bg-btn px-[22px] text-base font-semibold text-btn-ink hover:brightness-110"
+				>
+					<span>{f.submit}</span><span aria-hidden="true">→</span>
+				</button>
+			</form>
+		</div>
+	</section>
+</BaseLayout>
+
+<script>
+	import type { ContactContent } from '../../data/contacto';
+
+	interface Config {
+		phone: string;
+		phoneDisplay: string;
+		t: ContactContent['form'];
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-contact]').forEach((root) => {
+		const { phone, phoneDisplay, t } = JSON.parse(root.dataset.contact!) as Config;
+		const form = root.querySelector('form')!;
+		const sent = root.querySelector<HTMLElement>('[data-sent]')!;
+		const error = root.querySelector<HTMLElement>('[data-error]')!;
+		const name = form.elements.namedItem('nombre') as HTMLInputElement;
+		const email = form.elements.namedItem('correo') as HTMLInputElement;
+		const msg = form.elements.namedItem('mensaje') as HTMLTextAreaElement;
+		const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
+
+		const clear = (el: HTMLInputElement | HTMLTextAreaElement) => {
+			el.removeAttribute('aria-invalid');
+			if (!form.querySelector('[aria-invalid]')) error.textContent = '';
+		};
+		[name, msg].forEach((el) => el.addEventListener('input', () => clear(el)));
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const v = { name: name.value.trim(), email: email.value.trim(), msg: msg.value.trim() };
+			const missing = [name, msg].filter((el) => !el.value.trim());
+			[name, msg].forEach((el) => el.removeAttribute('aria-invalid'));
+			missing.forEach((el) => el.setAttribute('aria-invalid', 'true'));
+			if (missing.length) {
+				error.textContent = t.error;
+				missing[0]!.focus();
+				return;
+			}
+			const text = fill(v.email ? t.helloEmail : t.hello, v);
+			window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+			sent.querySelector('[data-thanks]')!.textContent = fill(t.thanks, v);
+			sent.querySelector('[data-sent-text]')!.textContent = fill(t.sent, { phone: phoneDisplay });
+			form.hidden = true;
+			sent.hidden = false;
+			sent.querySelector<HTMLButtonElement>('[data-again]')!.focus();
+		});
+
+		sent.querySelector('[data-again]')!.addEventListener('click', () => {
+			msg.value = '';
+			sent.hidden = true;
+			form.hidden = false;
+			msg.focus();
+		});
+	});
+</script>
