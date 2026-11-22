@@ -12,6 +12,7 @@ Publicación prevista: <https://fpi2026.github.io/grupoe/>
 - [Tailwind CSS v4](https://tailwindcss.com/) con los tokens del diseño en `src/styles/global.css`
 - Tipografías Newsreader y Hanken Grotesk autoalojadas con [Fontsource](https://fontsource.org/)
 - GitHub Pages con la [acción oficial de Astro](https://docs.astro.build/en/guides/deploy/github/)
+- Panel de contenido `/admin` con [Preact](https://preactjs.com/) y [axios](https://axios-http.com/) contra la API de GitHub
 
 ## Requisitos
 
@@ -36,6 +37,9 @@ Se ejecutan desde la raíz del repositorio:
 .github/workflows/deploy.yml   Despliegue en GitHub Pages
 public/                        Archivos que se copian tal cual (favicon)
 src/
+  admin/                       Panel de contenido (CMS): App.tsx, components/, lib/github.ts
+  content/noticias/{es,en}/    Noticias en Markdown (las edita el panel)
+  content.config.ts            Esquema de la colección de noticias
   components/                  Header, Footer, WhatsAppButton, Logo, Fog
   i18n/
     ui.ts                      Diccionario ES/EN, rutas traducidas y contacto
@@ -52,6 +56,20 @@ src/
 - **Enlaces internos:** nunca escribir rutas a mano. Usar `localizedPath('alojamiento', lang)` para páginas y `withBase('archivo.ext')` para archivos. Así funcionan bajo `/grupoe/`.
 - **Tema día/noche:** se controla con `data-theme` en `<html>` y se guarda en `localStorage` (`cael-theme`). Los colores se usan con las clases del tema (`bg-bg`, `text-ink`, `bg-btn`, `text-amber-ink`…), nunca con colores fijos.
 - **Contenido:** solo datos del informe institucional del hostal. No se inventan cifras, precios ni reseñas.
+
+## Panel de contenido (`/admin`)
+
+El panel lee y escribe las noticias del repositorio con la API de GitHub. Cada guardado es **un commit** en `main` (noticia ES, EN y portada juntas) y el flujo de Actions vuelve a compilar el sitio. No hay servidor ni base de datos.
+
+1. Crear un token *fine-grained* en GitHub (*Settings → Developer settings → Personal access tokens → Fine-grained tokens*):
+   - *Resource owner*: la organización `fpi2026`; *Repository access*: solo `grupoe`.
+   - Permisos: **Contents** lectura y escritura; **Actions** solo lectura (estado de la publicación).
+   - Con fecha de vencimiento. Si la organización lo exige, un administrador debe aprobarlo.
+2. Abrir `/admin/` (en local: `http://localhost:4321/grupoe/admin/`) y pegar el token. Se guarda en `sessionStorage` y se borra al cerrar la pestaña; nunca va en el código.
+3. **Noticias:** crear, editar y borrar, con textos en español e inglés, vista previa en Markdown y foto de portada (se reduce a 1600 px y WebP en el navegador). Una noticia sin marcar como *Publicada* es un borrador: se guarda, pero no aparece en el sitio.
+4. Si alguien cambió la misma noticia mientras se editaba, el panel avisa y no sobrescribe.
+
+Variables opcionales (archivo `.env`): `PUBLIC_GH_OWNER`, `PUBLIC_GH_REPO`, `PUBLIC_GH_BRANCH` y `PUBLIC_GH_API` (por defecto `fpi2026`, `grupoe`, `main` y la API pública de GitHub).
 
 ## Despliegue
 

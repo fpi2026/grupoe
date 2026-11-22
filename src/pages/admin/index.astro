@@ -1,0 +1,63 @@
+---
+/**
+ * Panel de contenido (CMS). Solo funciona en el navegador (client:only) y no se indexa.
+ * El token de GitHub se pide al entrar; nunca va en el código.
+ */
+import '../../styles/global.css';
+import App from '../../admin/App';
+---
+
+<!doctype html>
+<html lang="es" data-theme="day">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Panel · Cabañas Alpinas El Limo</title>
+		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/?$/, '/')}favicon.svg`} />
+	</head>
+	<body>
+		<App client:only="preact">
+			<p slot="fallback" style="padding:2rem">Cargando el panel…</p>
+		</App>
+		<noscript><p style="padding:2rem">El panel necesita JavaScript.</p></noscript>
+	</body>
+</html>
+
+<style is:global>
+	/* Vista previa del texto en Markdown dentro del editor */
+	.vista-md :is(p, ul, ol, blockquote) {
+		margin: 0;
+	}
+	.vista-md :is(ul, ol) {
+		padding-left: 1.3em;
+	}
+	.vista-md ul {
+		list-style: disc;
+	}
+	.vista-md ol {
+		list-style: decimal;
+	}
+	.vista-md h2 {
+		margin: 0.6em 0 0;
+		font-family: var(--font-serif);
+		font-weight: 500;
+		font-size: clamp(26px, 2.6vw, 34px);
+		line-height: 1.15;
+	}
+	.vista-md h3 {
+		margin: 0.4em 0 0;
+		font-family: var(--font-serif);
+		font-weight: 500;
+		font-size: 24px;
+	}
+	.vista-md blockquote {
+		border-left: 3px solid var(--amber);
+		padding-left: 14px;
+		font-family: var(--font-serif);
+		font-style: italic;
+	}
+	.vista-md img {
+		max-width: 100%;
+	}
+</style>
