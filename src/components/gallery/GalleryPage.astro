@@ -1,0 +1,194 @@
+---
+/**
+ * Galería (Galeria.dc.html): filtros por categoría, cuadrícula tipo mosaico
+ * y visor a pantalla completa con teclado (Esc, ← →).
+ * Sin JavaScript, cada miniatura abre la foto grande en la misma pestaña.
+ */
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { categories, galeria, galeriaText } from '../../data/galeria';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = galeriaText[lang];
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/img/*.jpg', { eager: true });
+const photo = (name: string) => {
+	const m = files[`../../assets/img/${name}.jpg`];
+	if (!m) throw new Error(`Falta la foto src/assets/img/${name}.jpg`);
+	return m.default;
+};
+const items = await Promise.all(
+	galeria.map(async (g) => ({
+		...g,
+		src: photo(g.file),
+		alt: lang === 'es' ? g.es : g.en,
+		full: (await getImage({ src: photo(g.file), width: 1600, format: 'webp' })).src,
+	})),
+);
+---
+
+<BaseLayout lang={lang} route="galeria" title={t.title} description={t.description}>
+	<div data-gallery class="container-site flex flex-col gap-[clamp(28px,4vw,48px)] pt-[clamp(56px,8vw,112px)] pb-[clamp(72px,9vw,128px)]">
+		<h1 class="m-0 font-serif text-h1 font-normal tracking-[-.02em]">{t.title}</h1>
+
+		<div role="group" aria-label={t.filter} data-filters class="hidden flex-wrap gap-2">
+			{
+				categories.map((c, i) => (
+					<button type="button" data-cat={c.id} aria-pressed={i === 0 ? 'true' : 'false'} class="chip">
+						{lang === 'es' ? c.es : c.en}
+					</button>
+				))
+			}
+		</div>
+
+		<ul class="m-0 list-none columns-[300px] gap-x-3 p-0">
+			{
+				items.map((g, i) => (
+					<li data-item={g.cat} class="mb-3 break-inside-avoid">
+						<a
+							href={g.full}
+							data-index={i}
+							data-full={g.full}
+							data-alt={g.alt}
+							aria-label={`${t.enlarge} ${g.alt}`}
+							class="group block cursor-zoom-in overflow-hidden rounded-md"
+						>
+							<Image
+								src={g.src}
+								alt={g.alt}
+								widths={[400, 600, 800]}
+								sizes="(min-width: 1360px) 420px, (min-width: 700px) 45vw, 100vw"
+								class="h-auto w-full transition-transform duration-[.6s] ease-out group-hover:scale-[1.03]"
+							/>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+
+	<dialog data-viewer aria-label={t.viewer} class="viewer">
+		<div class="flex h-full flex-col">
+			<div class="flex items-center justify-between px-[clamp(14px,3vw,28px)] py-3.5 text-sm text-[#F6F2E8]">
+				<span data-pos></span>
+				<button type="button" data-close aria-label={t.close} class="vbtn size-11 text-[22px]">×</button>
+			</div>
+			<div class="flex min-h-0 flex-1 items-center justify-center gap-2 px-[clamp(8px,2vw,20px)]">
+				<button type="button" data-prev aria-label={t.prev} class="vbtn size-12 flex-none text-xl">←</button>
+				<div data-imgbox class="contents"></div>
+				<button type="button" data-next aria-label={t.next} class="vbtn size-12 flex-none text-xl">→</button>
+			</div>
+			<p data-caption class="m-0 px-[clamp(14px,3vw,28px)] pt-4 pb-6 text-[15px] text-[#E6E0D2]"></p>
+		</div>
+	</dialog>
+</BaseLayout>
+
+<style>
+	.chip {
+		height: 40px;
+		padding: 0 16px;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		background: transparent;
+		color: var(--ink);
+		font-size: 14.5px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	.chip[aria-pressed='true'] {
+		border-color: var(--ink);
+		background: var(--ink);
+		color: var(--bg);
+	}
+	.viewer {
+		width: 100vw;
+		height: 100dvh;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: rgba(6, 9, 7, 0.94);
+	}
+	.viewer::backdrop {
+		background: transparent;
+	}
+	.vbtn {
+		display: grid;
+		place-items: center;
+		border-radius: 999px;
+		border: 1px solid rgba(246, 242, 233, 0.4);
+		background: transparent;
+		color: #f6f2e8;
+		cursor: pointer;
+	}
+	.vbtn:hover {
+		background: rgba(246, 242, 233, 0.12);
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-gallery]');
+	const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]');
+
+	if (root && viewer) {
+		const filters = root.querySelector<HTMLElement>('[data-filters]')!;
+		const chips = [...filters.querySelectorAll<HTMLButtonElement>('[data-cat]')];
+		const items = [...root.querySelectorAll<HTMLLIElement>('[data-item]')];
+		// La foto del visor se crea aquí, para no dejar un <img> sin src en el HTML
+		const img = document.createElement('img');
+		img.className = 'max-h-full max-w-[calc(100%-120px)] rounded-sm object-contain';
+		viewer.querySelector('[data-imgbox]')!.replaceWith(img);
+		const pos = viewer.querySelector<HTMLElement>('[data-pos]')!;
+		const caption = viewer.querySelector<HTMLElement>('[data-caption]')!;
+		let shown: HTMLAnchorElement[] = [];
+		let idx = -1;
+
+		// Filtros (solo con JavaScript)
+		filters.classList.replace('hidden', 'flex');
+		function applyFilter(cat: string) {
+			chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.cat === cat)));
+			items.forEach((li) => (li.hidden = cat !== 'all' && li.dataset.item !== cat));
+			shown = items.filter((li) => !li.hidden).map((li) => li.querySelector('a')!);
+		}
+		chips.forEach((c) => c.addEventListener('click', () => applyFilter(c.dataset.cat!)));
+		applyFilter('all');
+
+		// Visor
+		function show(i: number) {
+			const n = shown.length;
+			idx = (i + n) % n;
+			const a = shown[idx]!;
+			img.src = a.dataset.full!;
+			img.alt = a.dataset.alt!;
+			caption.textContent = a.dataset.alt!;
+			pos.textContent = `${idx + 1} / ${n}`;
+		}
+		root.addEventListener('click', (e) => {
+			const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-full]');
+			if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+			e.preventDefault();
+			show(shown.indexOf(a));
+			viewer.showModal();
+			viewer.querySelector<HTMLButtonElement>('[data-close]')!.focus();
+		});
+		viewer.querySelector('[data-close]')!.addEventListener('click', () => viewer.close());
+		viewer.querySelector('[data-prev]')!.addEventListener('click', () => show(idx - 1));
+		viewer.querySelector('[data-next]')!.addEventListener('click', () => show(idx + 1));
+		viewer.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowRight') show(idx + 1);
+			if (e.key === 'ArrowLeft') show(idx - 1);
+		});
+		// Clic fuera de la foto y de los botones: cerrar
+		viewer.addEventListener('click', (e) => {
+			const el = e.target as HTMLElement;
+			if (!el.closest('button') && el !== img) viewer.close();
+		});
+		// Al cerrar, el foco vuelve a la miniatura
+		viewer.addEventListener('close', () => shown[idx]?.focus());
+	}
+</script>
