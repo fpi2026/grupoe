@@ -48,10 +48,10 @@ export interface HomeContent {
 		text: string;
 		more: string;
 	};
+	/** La lista de reconocimientos está en src/content/datos/reconocimientos.json (la edita el panel). */
 	awards: {
 		title: string;
 		alt: string;
-		items: { name: string; by: string }[];
 	};
 	booking: {
 		titleA: string;
@@ -193,16 +193,6 @@ export const inicio: Record<Lang, HomeContent> = {
 		awards: {
 			title: 'Reconocimientos y apoyos',
 			alt: 'Placas de reconocimiento de madera colgadas en una pared de ladrillo',
-			items: [
-				{ name: '1.er lugar Premio WISE El Salvador · Turismo y Ciencia', by: 'WISE' },
-				{ name: 'Proyecto ganador Capital Semilla Transición Digital', by: 'KfW · DINÁMICA' },
-				{ name: 'Capital Semilla · Programa de Desarrollo MYPE Verde', by: 'KOICA' },
-				{ name: 'Proyecto Ilamatepec Turismo Naranja', by: 'Unión Europea' },
-				{ name: 'Apoyo del Plan Trifinio', by: 'Plan Trifinio' },
-				{ name: 'Sistema solar fotovoltaico 5.85 kWp', by: 'DINÁMICA II' },
-				{ name: 'Sello Ambiental NTS 13.11.14:25', by: '' },
-				{ name: 'Registro Nacional de Turismo: en trámite', by: '' },
-			],
 		},
 		booking: {
 			titleA: 'Te esperamos',
@@ -342,16 +332,6 @@ export const inicio: Record<Lang, HomeContent> = {
 		awards: {
 			title: 'Recognition and support',
 			alt: 'Wooden recognition plaques hanging on a brick wall',
-			items: [
-				{ name: '1st place, WISE El Salvador Award · Tourism & Science', by: 'WISE' },
-				{ name: 'Seed Capital Award – Digital Transition', by: 'KfW · DINÁMICA' },
-				{ name: 'Seed Capital · Green SME Development Program', by: 'KOICA' },
-				{ name: 'Ilamatepec Orange Tourism Project', by: 'European Union' },
-				{ name: 'Support from Plan Trifinio', by: 'Plan Trifinio' },
-				{ name: '5.85 kWp solar PV system', by: 'DINÁMICA II' },
-				{ name: 'Environmental Seal NTS 13.11.14:25', by: '' },
-				{ name: 'National Tourism Registry: in process', by: '' },
-			],
 		},
 		booking: {
 			titleA: "We'll be waiting",

@@ -4,6 +4,9 @@ import { mensajeDeError, ultimosCambios, type CambioReciente, type Publicacion }
 import { estaVacio, type Repo } from '../lib/noticias';
 import { esDemo } from '../lib/demo';
 import { usePublicacion } from '../lib/publicacion';
+import { leerTexto } from '../lib/github';
+import { CARPETA_DATOS } from '../lib/documento';
+import { SECCIONES, type Seccion } from '../secciones';
 import { Aviso, Esqueleto, Girando, Insignia, claseBoton, contenedor, type Tono } from './ui';
 
 const ESTADOS: Record<Publicacion['estado'], { titulo: string; texto: string; color: string; paso: number }> = {
@@ -47,6 +50,8 @@ export function cuando(iso: string): string {
 
 interface CambioLegible {
 	seccion: string;
+	/** Ruta de la sección en el panel (para el enlace). */
+	ruta?: string;
 	verbo: string;
 	que: string;
 	estado?: { texto: string; tono: Tono };
@@ -54,6 +59,8 @@ interface CambioLegible {
 
 /** Traduce el mensaje del commit que escribe el panel («CMS: Agrega la noticia «…» (borrador)»). */
 function leerCambio(mensaje: string): CambioLegible {
+	const seccion = SECCIONES.find((s) => s.enCommit && mensaje === `CMS: Actualiza ${s.enCommit}`);
+	if (seccion) return { seccion: seccion.texto, ruta: seccion.ruta, verbo: 'Editó', que: seccion.texto, estado: { texto: 'Publicado', tono: 'ok' } };
 	const m = /^CMS: (Agrega|Actualiza|Borra) la noticia «(.+)»( \(borrador\))?$/.exec(mensaje);
 	if (!m) return { seccion: 'Sitio', verbo: 'Cambio', que: mensaje };
 	const verbo = { Agrega: 'Creó', Actualiza: 'Editó', Borra: 'Borró' }[m[1] as 'Agrega' | 'Actualiza' | 'Borra'];
@@ -87,6 +94,7 @@ export function Tablero({ datos, nombre }: { datos: Repo | null; nombre: string 
 	const enlace = (c: CambioReciente, l: CambioLegible) => {
 		const n = l.seccion === 'Noticias' ? datos?.noticias.find((x) => x.textos.es?.titulo === l.que || x.textos.en?.titulo === l.que) : undefined;
 		if (n && l.estado?.texto !== 'Borrado') return { href: `#/noticias/editar/${n.slug}` };
+		if (l.ruta) return { href: `#${l.ruta}` };
 		return demo ? null : { href: c.url, target: '_blank', rel: 'noopener' };
 	};
 
@@ -175,7 +183,7 @@ export function Tablero({ datos, nombre }: { datos: Repo | null; nombre: string 
 						<strong class="text-ink">
 							{(() => {
 								const l = leerCambio(ultimo.mensaje);
-								return l.seccion === 'Noticias' ? `Noticias · «${l.que}»` : l.que;
+								return l.seccion === 'Noticias' ? `Noticias · «${l.que}»` : l.ruta ? l.seccion : l.que;
 							})()}
 						</strong>{' '}
 						· {ultimo.autor} · {cuando(ultimo.fecha)}
@@ -225,6 +233,9 @@ export function Tablero({ datos, nombre }: { datos: Repo | null; nombre: string 
 							</a>
 						</div>
 					</article>
+					{SECCIONES.filter((x) => x.archivo).map((x) => (
+						<TarjetaSeccion key={x.id} seccion={x} repo={datos} />
+					))}
 				</div>
 			</section>
 
@@ -267,5 +278,36 @@ export function Tablero({ datos, nombre }: { datos: Repo | null; nombre: string 
 				</ul>
 			</section>
 		</div>
+	);
+}
+
+/** Tarjeta de una sección guardada en JSON, con su resumen. */
+function TarjetaSeccion({ seccion, repo }: { seccion: Seccion; repo: Repo | null }) {
+	const [resumen, setResumen] = useState<string | null>(null);
+	useEffect(() => {
+		const sha = repo?.archivos.get(`${CARPETA_DATOS}/${seccion.archivo}`);
+		if (!sha) return;
+		let vivo = true;
+		leerTexto(sha)
+			.then((t) => vivo && setResumen(seccion.resumen ? seccion.resumen(JSON.parse(t)) : ''))
+			.catch(() => vivo && setResumen(''));
+		return () => {
+			vivo = false;
+		};
+	}, [repo, seccion]);
+	return (
+		<article class="flex flex-col gap-3 rounded-md border border-line bg-card p-[18px]">
+			<h3 class="m-0 font-serif text-[23px] leading-[1.15] font-medium">
+				<a href={`#${seccion.ruta}`} class="text-ink no-underline hover:text-forest hover:underline">
+					{seccion.texto}
+				</a>
+			</h3>
+			{resumen === null ? <Esqueleto class="h-4 w-40" /> : resumen && <p class="m-0 text-[15px]">{resumen}</p>}
+			<div class="mt-auto flex flex-wrap gap-2 pt-1">
+				<a href={`#${seccion.ruta}`} class={claseBoton('secundario', 'px-3.5 text-[14.5px]')}>
+					Editar
+				</a>
+			</div>
+		</article>
 	);
 }

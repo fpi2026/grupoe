@@ -19,6 +19,8 @@ interface Props {
 	proporcion?: string;
 	/** Texto del espacio vacío. */
 	textoPendiente?: string;
+	/** Insignia cuando no hay foto. */
+	insigniaPendiente?: string;
 	error?: string;
 	/** Foto elegida y reducida, lista para subir al guardar. */
 	onFoto: (f: FotoNueva) => void;
@@ -27,7 +29,7 @@ interface Props {
 	id?: string;
 }
 
-export function SelectorFoto({ etiqueta, src, proporcion = '4/3', textoPendiente, error, onFoto, onQuitar, id = 'foto' }: Props) {
+export function SelectorFoto({ etiqueta, src, proporcion = '4/3', textoPendiente, insigniaPendiente = 'Foto pendiente', error, onFoto, onQuitar, id = 'foto' }: Props) {
 	const [reduciendo, setReduciendo] = useState(false);
 	const [info, setInfo] = useState('');
 	const [problema, setProblema] = useState('');
@@ -60,7 +62,7 @@ export function SelectorFoto({ etiqueta, src, proporcion = '4/3', textoPendiente
 				<span id={`${id}-l`} class="text-[14.5px] font-semibold">
 					{etiqueta}
 				</span>
-				{!src && <span class="inline-flex items-center rounded-pill bg-neutral-bg px-[9px] py-0.5 text-[12.5px] font-semibold text-neutral">Foto pendiente</span>}
+				{!src && <span class="inline-flex items-center rounded-pill bg-neutral-bg px-[9px] py-0.5 text-[12.5px] font-semibold text-neutral">{insigniaPendiente}</span>}
 			</div>
 			<div class={`relative overflow-hidden rounded-md bg-surface ${error ? 'outline-2 outline-danger' : ''}`} style={{ aspectRatio: proporcion }}>
 				{src ? (

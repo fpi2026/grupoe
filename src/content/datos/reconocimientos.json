@@ -1,0 +1,100 @@
+{
+	"items": [
+		{
+			"nombre": {
+				"es": "1.er lugar Premio WISE El Salvador · Turismo y Ciencia",
+				"en": "1st place, WISE El Salvador Award · Tourism & Science"
+			},
+			"entidad": {
+				"es": "WISE",
+				"en": "WISE"
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Proyecto ganador Capital Semilla Transición Digital",
+				"en": "Seed Capital Award – Digital Transition"
+			},
+			"entidad": {
+				"es": "KfW · DINÁMICA",
+				"en": "KfW · DINÁMICA"
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Capital Semilla · Programa de Desarrollo MYPE Verde",
+				"en": "Seed Capital · Green SME Development Program"
+			},
+			"entidad": {
+				"es": "KOICA",
+				"en": "KOICA"
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Proyecto Ilamatepec Turismo Naranja",
+				"en": "Ilamatepec Orange Tourism Project"
+			},
+			"entidad": {
+				"es": "Unión Europea",
+				"en": "European Union"
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Apoyo del Plan Trifinio",
+				"en": "Support from Plan Trifinio"
+			},
+			"entidad": {
+				"es": "Plan Trifinio",
+				"en": "Plan Trifinio"
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Sistema solar fotovoltaico 5.85 kWp",
+				"en": "5.85 kWp solar PV system"
+			},
+			"entidad": {
+				"es": "DINÁMICA II",
+				"en": "DINÁMICA II"
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Sello Ambiental NTS 13.11.14:25",
+				"en": "Environmental Seal NTS 13.11.14:25"
+			},
+			"entidad": {
+				"es": "",
+				"en": ""
+			},
+			"anio": "",
+			"logo": ""
+		},
+		{
+			"nombre": {
+				"es": "Registro Nacional de Turismo: en trámite",
+				"en": "National Tourism Registry: in process"
+			},
+			"entidad": {
+				"es": "",
+				"en": ""
+			},
+			"anio": "",
+			"logo": ""
+		}
+	]
+}

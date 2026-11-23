@@ -8,12 +8,10 @@ import { useEffect, useState } from 'preact/hooks';
 import type { Publicacion } from '../lib/github';
 import { usePublicacion } from '../lib/publicacion';
 import { AvisosFlotantes, Girando } from './ui';
+import { SECCIONES, seccionActiva } from '../secciones';
 
-/** Secciones con pantalla terminada. Las demás (fase 5) se agregan aquí al construirlas. */
-const SECCIONES = [
-	{ id: 'tablero', href: '#/', texto: 'Tablero', activa: (r: string) => r === '/' },
-	{ id: 'noticias', href: '#/noticias', texto: 'Noticias', activa: (r: string) => r.startsWith('/noticias') },
-] as const;
+/** Accesos de la barra inferior en móvil; el resto va en «Más». */
+const RAPIDAS = ['tablero', 'noticias', 'galeria', 'textos'];
 
 const PUB: Record<Publicacion['estado'], { texto: string; clase: string }> = {
 	'en-cola': { texto: 'En cola', clase: 'bg-warn-bg text-warn' },
@@ -187,8 +185,8 @@ export function Marco({ ruta, nombre, demo, onSalir, onRestablecer, children }: 
 						{SECCIONES.map((s) => (
 							<li key={s.id}>
 								<a
-									href={s.href}
-									aria-current={s.activa(ruta) ? 'page' : undefined}
+									href={`#${s.ruta}`}
+									aria-current={seccionActiva(s, ruta) ? 'page' : undefined}
 									class="flex min-h-11 items-center border-b-2 border-transparent px-3 text-[14.5px] font-medium text-ink no-underline hover:bg-surface hover:text-amber-ink aria-[current=page]:border-amber aria-[current=page]:font-bold"
 								>
 									{s.texto}
@@ -217,8 +215,8 @@ export function Marco({ ruta, nombre, demo, onSalir, onRestablecer, children }: 
 						{SECCIONES.map((s) => (
 							<a
 								key={s.id}
-								href={s.href}
-								aria-current={s.activa(ruta) ? 'page' : undefined}
+								href={`#${s.ruta}`}
+								aria-current={seccionActiva(s, ruta) ? 'page' : undefined}
 								class="flex min-h-12 items-center rounded-sm px-3 text-[17px] font-medium text-ink no-underline aria-[current=page]:bg-surface aria-[current=page]:font-bold"
 							>
 								{s.texto}
@@ -238,16 +236,16 @@ export function Marco({ ruta, nombre, demo, onSalir, onRestablecer, children }: 
 
 			{/* Barra inferior en móvil */}
 			<nav aria-label="Accesos rápidos" class="fixed inset-x-0 bottom-0 z-46 border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] min-[821px]:hidden">
-				<ul class="m-0 grid list-none grid-cols-3 p-0">
-					{SECCIONES.map((s) => (
+				<ul class="m-0 flex list-none p-0 [&>li]:flex-1">
+					{SECCIONES.filter((s) => RAPIDAS.includes(s.id)).map((s) => (
 						<li key={s.id}>
 							<a
-								href={s.href}
-								aria-current={s.activa(ruta) ? 'page' : undefined}
+								href={`#${s.ruta}`}
+								aria-current={seccionActiva(s, ruta) ? 'page' : undefined}
 								class="flex h-[62px] flex-col items-center justify-center gap-[3px] border-t-2 border-transparent text-[11.5px] font-medium text-ink no-underline aria-[current=page]:border-amber aria-[current=page]:font-bold aria-[current=page]:text-forest"
 							>
-								{ICONOS[s.id]}
-								<span>{s.texto}</span>
+								{ICONOS[s.id] ?? ICONOS.mas}
+								<span>{s.texto.replace(' y avisos', '')}</span>
 							</a>
 						</li>
 					))}

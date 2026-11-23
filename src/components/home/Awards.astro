@@ -1,13 +1,16 @@
 ---
-/** Reconocimientos y apoyos (placas del Drive, Plan del sitio). */
+/** Reconocimientos y apoyos (placas del Drive, Plan del sitio). La lista se edita en /admin. */
 import { Image } from 'astro:assets';
 import placas from '../../assets/img/reconocimientos.jpg';
 import type { HomeContent } from '../../data/inicio';
+import { en, foto, reconocimientos } from '../../data/editable';
+import type { Lang } from '../../i18n/ui';
 
 interface Props {
+	lang: Lang;
 	t: HomeContent['awards'];
 }
-const { t } = Astro.props;
+const { lang, t } = Astro.props;
 ---
 
 <section aria-labelledby="rec-t" class="bg-surface transition-[background] duration-[.6s]">
@@ -24,12 +27,18 @@ const { t } = Astro.props;
 		</div>
 		<ul class="m-0 list-none self-end p-0">
 			{
-				t.items.map((r) => (
-					<li class="flex items-baseline justify-between gap-4 border-t border-line py-4">
-						<span class="text-[17px]">{r.name}</span>
-						{r.by && <span class="text-[12.5px] whitespace-nowrap text-muted">{r.by}</span>}
-					</li>
-				))
+				reconocimientos.map((r) => {
+					const entidad = [en(r.entidad, lang), r.anio].filter(Boolean).join(' · ');
+					return (
+						<li class="flex items-center justify-between gap-4 border-t border-line py-4">
+							<span class="flex items-center gap-3 text-[17px]">
+								{r.logo && <Image src={foto(r.logo)} alt="" width={80} class="size-10 flex-none rounded-sm bg-white object-contain p-0.5" />}
+								{en(r.nombre, lang)}
+							</span>
+							{entidad && <span class="text-[12.5px] whitespace-nowrap text-muted">{entidad}</span>}
+						</li>
+					);
+				})
 			}
 		</ul>
 	</div>

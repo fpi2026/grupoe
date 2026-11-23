@@ -175,22 +175,25 @@ export function AvisosFlotantes() {
 // Se piden una vez por sha y se guardan como URL de objeto
 const cache = new Map<string, Promise<string>>();
 
-/** URL de una portada guardada en el repositorio (null mientras carga o si no existe). */
-export function usePortadaRepo(portada: string, archivos: Map<string, string>): string | null {
+/** URL de una imagen del repositorio por su ruta (null mientras carga o si no existe). */
+export function useFotoRepo(path: string, archivos: Map<string, string>): string | null {
 	const [url, setUrl] = useState<string | null>(null);
 	useEffect(() => {
-		const sha = portada ? archivos.get(rutaPortada(portada)) : undefined;
+		const sha = path ? archivos.get(path) : undefined;
 		if (!sha) return setUrl(null);
-		const tipo = portada.endsWith('.webp') ? 'image/webp' : portada.endsWith('.png') ? 'image/png' : 'image/jpeg';
+		const tipo = path.endsWith('.webp') ? 'image/webp' : path.endsWith('.png') ? 'image/png' : 'image/jpeg';
 		if (!cache.has(sha)) cache.set(sha, leerBlob(sha, tipo).then((b) => URL.createObjectURL(b)));
 		let vivo = true;
 		cache.get(sha)!.then((u) => vivo && setUrl(u)).catch(() => vivo && setUrl(null));
 		return () => {
 			vivo = false;
 		};
-	}, [portada, archivos]);
+	}, [path, archivos]);
 	return url;
 }
+
+/** URL de una portada de noticia (escrita como en el .md). */
+export const usePortadaRepo = (portada: string, archivos: Map<string, string>) => useFotoRepo(portada ? rutaPortada(portada) : '', archivos);
 
 /** Muestra una portada guardada en el repositorio. */
 export function PortadaRepo({ portada, archivos, class: cls = '' }: { portada: string; archivos: Map<string, string>; class?: string }) {

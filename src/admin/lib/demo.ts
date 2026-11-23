@@ -93,18 +93,29 @@ const cargarSemilla = () =>
 
 const id = () => crypto.randomUUID().replace(/-/g, '');
 
+/**
+ * Versión de la semilla: el commit y la lista de archivos. Si cambia (nuevo despliegue, o en local
+ * al agregar archivos), la demostración vuelve a empezar desde el contenido publicado.
+ */
+function versionSemilla(s: Semilla): string {
+	let h = 0;
+	for (const a of s.archivos) for (const c of a.path + a.sha) h = (Math.imul(h, 31) + c.charCodeAt(0)) | 0;
+	return `${s.commit}:${(h >>> 0).toString(36)}`;
+}
+
 async function obtenerEstado(): Promise<Estado> {
 	const s = await cargarSemilla();
-	if (estado?.base === s.commit) return estado;
+	const version = versionSemilla(s);
+	if (estado?.base === version) return estado;
 	try {
 		const guardado = JSON.parse(localStorage.getItem(CLAVE_DATOS) ?? 'null') as Estado | null;
-		if (guardado?.base === s.commit) return (estado = guardado);
+		if (guardado?.base === version) return (estado = guardado);
 	} catch {
 		/* datos dañados: se empieza de cero */
 	}
 	const arbol = Object.fromEntries(s.archivos.map((a) => [a.path, a.sha]));
 	return (estado = {
-		base: s.commit,
+		base: version,
 		head: 'base',
 		commits: { base: { arbol: 'base', padre: null, mensaje: 'Contenido del sitio publicado', autor: 'Sitio publicado', fecha: s.fecha } },
 		arboles: { base: arbol },

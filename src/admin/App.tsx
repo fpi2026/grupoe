@@ -9,6 +9,7 @@ import { Marco } from './components/Marco';
 import { Tablero } from './components/Tablero';
 import { ListaNoticias } from './components/ListaNoticias';
 import { EditorNoticia } from './components/EditorNoticia';
+import { Reconocimientos } from './components/Reconocimientos';
 import { Aviso, Cargando, avisar, claseBoton, contenedor } from './components/ui';
 import { clearToken, getToken, mensajeDeError, verificarToken, type Permisos } from './lib/github';
 import { esDemo, nombreDemo, restablecerDemo, salirDemo, sesionSinToken } from './lib/demo';
@@ -124,11 +125,18 @@ export default function App({ fondoLogin }: { fondoLogin: string }) {
 		await recargar();
 	};
 
+	/** Después de guardar una sección en JSON: seguir la publicación y recargar. */
+	const seccionGuardada = async (sha: string) => {
+		seguirPublicacion(esDemo() ? undefined : sha);
+		await recargar();
+	};
+
 	const editar = /^\/noticias\/editar\/([a-z0-9-]+)$/.exec(ruta);
-	const esEditor = ruta === '/noticias/nueva' || Boolean(editar);
+	const esEditor = ruta === '/noticias/nueva' || Boolean(editar) || ruta === '/reconocimientos';
 	let pantalla;
 	if (ruta === '/') pantalla = <Tablero datos={datos} nombre={sesion.nombre} />;
 	else if (ruta === '/noticias') pantalla = <ListaNoticias datos={datos} />;
+	else if (ruta === '/reconocimientos') pantalla = <Reconocimientos key={`rec-${version}`} repo={datos} onGuardado={seccionGuardada} />;
 	else if (!datos) pantalla = error ? null : <div class={contenedor}><Cargando texto="Cargando noticias…" /></div>;
 	else if (ruta === '/noticias/nueva')
 		pantalla = <EditorNoticia key={`nueva-${version}`} datos={datos} slug={null} onGuardado={guardado} onBorrado={borrado} onRecargar={recargar} />;
