@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { mensajeDeError, ultimaPublicacion, ultimosCambios, type CambioReciente, type Publicacion } from '../lib/github';
 import type { Repo } from '../lib/noticias';
+import { esDemo } from '../lib/demo';
 import { Aviso, Cargando, Etiqueta } from './ui';
 
 const ESTADOS: Record<Publicacion['estado'], { texto: string; tono: 'verde' | 'ambar' | 'rojo' | 'neutro'; detalle: string }> = {
@@ -69,10 +70,17 @@ export function Tablero({ datos }: { datos: Repo | null }) {
 							</div>
 							<p class="m-0 text-sm">{ESTADOS[pub.estado].detalle}</p>
 							<p class="m-0 text-sm text-muted">
-								{fechaHora(pub.fecha)} ·{' '}
-								<a href={pub.url} target="_blank" rel="noopener">
-									ver en GitHub
-								</a>
+								{fechaHora(pub.fecha)}
+								{esDemo() ? (
+									' · simulada'
+								) : (
+									<>
+										{' · '}
+										<a href={pub.url} target="_blank" rel="noopener">
+											ver en GitHub
+										</a>
+									</>
+								)}
 							</p>
 						</>
 					)}
@@ -102,9 +110,13 @@ export function Tablero({ datos }: { datos: Repo | null }) {
 					<ul class="m-0 flex list-none flex-col p-0">
 						{cambios.map((c) => (
 							<li key={c.sha} class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-line py-3">
-								<a href={c.url} target="_blank" rel="noopener" class="text-ink">
-									{c.mensaje}
-								</a>
+								{esDemo() ? (
+									<span>{c.mensaje}</span>
+								) : (
+									<a href={c.url} target="_blank" rel="noopener" class="text-ink">
+										{c.mensaje}
+									</a>
+								)}
 								<span class="text-sm text-muted">
 									{c.autor} · {fechaHora(c.fecha)}
 								</span>

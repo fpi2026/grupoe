@@ -9,6 +9,7 @@ import { ListaNoticias } from './components/ListaNoticias';
 import { EditorNoticia } from './components/EditorNoticia';
 import { Aviso, Cargando } from './components/ui';
 import { clearToken, getToken, mensajeDeError, repo, verificarToken, type Permisos } from './lib/github';
+import { esDemo, nombreDemo, restablecerDemo, salirDemo } from './lib/demo';
 import { cargarNoticias, type Repo } from './lib/noticias';
 
 const leerRuta = () => location.hash.replace(/^#/, '') || '/';
@@ -21,9 +22,11 @@ export default function App() {
 	const [aviso, setAviso] = useState('');
 	/** Cambia en cada lectura del repositorio: reinicia el editor con los datos nuevos. */
 	const [version, setVersion] = useState(0);
+	const [confirmarRestablecer, setConfirmarRestablecer] = useState(false);
 
-	// Retomar la sesión si el token sigue en esta pestaña
+	// Retomar la sesión si sigue abierta en esta pestaña (demostración o token)
 	useEffect(() => {
+		if (esDemo()) return setSesion({ nombre: nombreDemo, escritura: true });
 		if (!getToken()) return setSesion(null);
 		verificarToken()
 			.then((p) => setSesion(p.escritura ? p : null))
@@ -68,9 +71,19 @@ export default function App() {
 
 	const salir = () => {
 		clearToken();
+		salirDemo();
 		setDatos(null);
 		setSesion(null);
 		location.hash = '';
+	};
+
+	const restablecer = async () => {
+		if (!confirmarRestablecer) return setConfirmarRestablecer(true);
+		setConfirmarRestablecer(false);
+		restablecerDemo();
+		setAviso('Demostración restablecida: el panel vuelve a mostrar el contenido del sitio publicado.');
+		location.hash = '#/';
+		await recargar();
 	};
 
 	const listo = async (mensaje: string) => {
@@ -127,6 +140,15 @@ export default function App() {
 				</div>
 			</header>
 			<main id="panel" class="mx-auto flex max-w-[1100px] flex-col gap-6 px-4 py-8">
+				{esDemo() && (
+					<Aviso tipo="info">
+						<strong>Modo demostración.</strong> Los cambios se guardan solo en este navegador: no llegan al repositorio ni al sitio, y la
+						publicación del tablero es simulada.{' '}
+						<button type="button" onClick={restablecer} class="font-semibold underline">
+							{confirmarRestablecer ? '¿Seguro? Se borran todos los cambios de prueba' : 'Restablecer demostración'}
+						</button>
+					</Aviso>
+				)}
 				{aviso && <Aviso tipo="ok">{aviso}</Aviso>}
 				{error && (
 					<Aviso tipo="error">
@@ -139,7 +161,9 @@ export default function App() {
 				{pantalla}
 			</main>
 			<footer class="mx-auto max-w-[1100px] px-4 pb-8 text-xs text-muted">
-				Cada guardado es un commit en {repo.owner}/{repo.name} ({repo.branch}).
+				{esDemo()
+					? 'Demostración: nada de lo que guardes aquí cambia el sitio.'
+					: `Cada guardado es un commit en ${repo.owner}/${repo.name} (${repo.branch}).`}
 			</footer>
 		</div>
 	);

@@ -3,6 +3,7 @@ import { marked } from 'marked';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { newsTagIds, newsTags } from '../../data/noticias';
 import { Conflicto, mensajeDeError } from '../lib/github';
+import { esDemo } from '../lib/demo';
 import { comprimirImagen, tamano } from '../lib/imagen';
 import {
 	LANGS,
@@ -132,7 +133,9 @@ export function EditorNoticia({ datos, slug, onListo, onRecargar }: Props) {
 		try {
 			await guardarNoticia(n, portadaNueva?.blob ?? null, nueva, datos);
 			onListo(
-				n.publicado
+				esDemo()
+					? 'Guardado en la demostración. Solo se ve en este panel y en este navegador: el sitio no cambia.'
+					: n.publicado
 					? 'Noticia guardada. El sitio se actualizará en 1 o 2 minutos.'
 					: 'Borrador guardado. No aparecerá en el sitio hasta que lo marques como publicado.',
 			);
@@ -149,7 +152,7 @@ export function EditorNoticia({ datos, slug, onListo, onRecargar }: Props) {
 		setError('');
 		try {
 			await borrarNoticia(original!, datos);
-			onListo('Noticia borrada. El cambio queda en el historial de GitHub.');
+			onListo(esDemo() ? 'Noticia borrada de la demostración. «Restablecer demostración» la recupera.' : 'Noticia borrada. El cambio queda en el historial de GitHub.');
 		} catch (err) {
 			setConflicto(err instanceof Conflicto);
 			setError(mensajeDeError(err));
@@ -382,7 +385,7 @@ export function EditorNoticia({ datos, slug, onListo, onRecargar }: Props) {
 				)}
 				{confirmarBorrado && (
 					<div role="alertdialog" aria-label="Confirmar borrado" class="flex flex-wrap items-center gap-3">
-						<span class="text-sm font-semibold">¿Borrar en ambos idiomas? Se puede recuperar desde el historial de GitHub.</span>
+						<span class="text-sm font-semibold">¿Borrar en ambos idiomas? {esDemo() ? 'En la demostración se recupera con «Restablecer demostración».' : 'Se puede recuperar desde el historial de GitHub.'}</span>
 						<Boton variante="peligro" onClick={borrar} disabled={guardando} autoFocus>
 							{guardando ? 'Borrando…' : 'Sí, borrar'}
 						</Boton>

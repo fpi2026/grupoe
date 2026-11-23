@@ -7,6 +7,7 @@
  * y dispara UNA sola publicación, en vez de un commit por archivo.
  */
 import axios, { AxiosError } from 'axios';
+import { adaptadorDemo, esDemo } from './demo';
 
 const env = import.meta.env;
 export const repo = {
@@ -28,8 +29,12 @@ export const gh = axios.create({
 	timeout: 30_000,
 });
 
-// Añade el token a cada petición
+// Añade el token a cada petición. En modo demostración, las peticiones no salen del navegador.
 gh.interceptors.request.use((cfg) => {
+	if (esDemo()) {
+		cfg.adapter = adaptadorDemo;
+		return cfg;
+	}
 	const token = getToken();
 	if (token) cfg.headers.Authorization = `Bearer ${token}`;
 	return cfg;
@@ -53,6 +58,7 @@ export function mensajeDeError(e: unknown): string {
 	if (e instanceof AxiosError) {
 		const s = e.response?.status;
 		if (!e.response) return 'No hay conexión con GitHub. Revisa tu internet e inténtalo de nuevo.';
+		if (typeof e.response.data?.mensaje === 'string') return e.response.data.mensaje; // mensajes del modo demostración
 		if (s === 401) return 'El token no es válido o ya venció. Vuelve a iniciar sesión.';
 		if (s === 403) return 'El token no tiene permiso para esta acción (revisa los permisos de Contents y Actions).';
 		if (s === 404) return 'No se encontró el repositorio o el archivo. ¿El token tiene acceso a este repositorio?';

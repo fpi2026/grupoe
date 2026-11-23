@@ -59,13 +59,23 @@ src/
 
 ## Panel de contenido (`/admin`)
 
+### Modo demostración (para practicar)
+
+Usuario **`AdminAlpina`** y contraseña **`Admin123!`**. Abre el panel completo (crear, editar, borrar noticias, subir portadas, tablero), pero **no escribe en GitHub**: los cambios se guardan solo en el navegador de quien los hace (`localStorage`) y el sitio no cambia. La publicación del tablero es simulada. *Restablecer demostración* vuelve al contenido publicado.
+
+- Parte de `admin/demo-repo.json`, que se genera al compilar (`src/pages/admin/demo-repo.json.ts`) con las noticias del repositorio; las imágenes se descargan de `raw.githubusercontent.com` (el repositorio es público).
+- La comprobación de usuario y contraseña ocurre en el navegador: **no es seguridad**, solo una puerta de práctica, y por eso este modo no puede escribir en el repositorio. Si el hostal elige este tipo de acceso para el panel real, hace falta un servidor (por ejemplo, un Worker de Cloudflare) que guarde las contraseñas y el token de GitHub.
+- Código: `src/admin/lib/demo.ts` (adaptador de axios que imita la API de GitHub).
+
+### Con un token de GitHub (guarda y publica)
+
 El panel lee y escribe las noticias del repositorio con la API de GitHub. Cada guardado es **un commit** en `main` (noticia ES, EN y portada juntas) y el flujo de Actions vuelve a compilar el sitio. No hay servidor ni base de datos.
 
 1. Crear un token *fine-grained* en GitHub (*Settings → Developer settings → Personal access tokens → Fine-grained tokens*):
    - *Resource owner*: la organización `fpi2026`; *Repository access*: solo `grupoe`.
    - Permisos: **Contents** lectura y escritura; **Actions** solo lectura (estado de la publicación).
    - Con fecha de vencimiento. Si la organización lo exige, un administrador debe aprobarlo.
-2. Abrir `/admin/` (en local: `http://localhost:4321/grupoe/admin/`) y pegar el token. Se guarda en `sessionStorage` y se borra al cerrar la pestaña; nunca va en el código.
+2. Abrir `/admin/` (en local: `http://localhost:4321/grupoe/admin/`), desplegar *Entrar con un token de GitHub* y pegar el token. Se guarda en `sessionStorage` y se borra al cerrar la pestaña; nunca va en el código.
 3. **Noticias:** crear, editar y borrar, con textos en español e inglés, vista previa en Markdown y foto de portada (se reduce a 1600 px y WebP en el navegador). Una noticia sin marcar como *Publicada* es un borrador: se guarda, pero no aparece en el sitio.
 4. Si alguien cambió la misma noticia mientras se editaba, el panel avisa y no sobrescribe.
 
