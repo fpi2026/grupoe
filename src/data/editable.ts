@@ -14,6 +14,8 @@ import menuJson from '../content/datos/menu.json';
 import sitioJson from '../content/datos/sitio.json';
 import experienciasJson from '../content/datos/experiencias.json';
 import alojamientoJson from '../content/datos/alojamiento.json';
+import galeriaJson from '../content/datos/galeria.json';
+import { categoryIds } from './galeria';
 
 // ---------- Fotos ----------
 
@@ -141,3 +143,13 @@ export const alojamientoSitio = validar(
 	alojamientoJson,
 	'alojamiento.json',
 );
+
+// ---------- Galería ----------
+
+const fotoGaleria = z.object({
+	foto: rutaFoto.refine((r) => r !== '', 'Falta la foto'),
+	categoria: z.enum(categoryIds),
+	alt: bilingueObligatorio,
+});
+
+export const galeriaSitio = validar(z.object({ fotos: z.array(fotoGaleria) }), galeriaJson, 'galeria.json').fotos;

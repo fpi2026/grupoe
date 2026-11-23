@@ -46,6 +46,17 @@ export const SECCIONES: Seccion[] = [
 		resumen: (d) => `${d.platillos.length} ${d.platillos.length === 1 ? 'platillo' : 'platillos'} · ${d.fotos.length} ${d.fotos.length === 1 ? 'foto' : 'fotos'}`,
 	},
 	{
+		id: 'galeria',
+		ruta: '/galeria',
+		texto: 'Galería',
+		archivo: 'galeria.json',
+		enCommit: 'la galería',
+		resumen: (d) => {
+			const sin = d.fotos.filter((f: { alt: { es: string; en: string } }) => !f.alt.es.trim() || !f.alt.en.trim()).length;
+			return `${d.fotos.length} ${d.fotos.length === 1 ? 'foto' : 'fotos'}${sin ? ` · ${sin} sin descripción completa` : ''}`;
+		},
+	},
+	{
 		id: 'reconocimientos',
 		ruta: '/reconocimientos',
 		texto: 'Reconocimientos',

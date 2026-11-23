@@ -14,6 +14,7 @@ import { Gastronomia } from './components/Gastronomia';
 import { Textos } from './components/Textos';
 import { Experiencias } from './components/Experiencias';
 import { Alojamiento } from './components/Alojamiento';
+import { Galeria } from './components/Galeria';
 
 /** Pantallas que editan un JSON de src/content/datos/ (ruta → componente). */
 const DOCUMENTOS = {
@@ -21,6 +22,7 @@ const DOCUMENTOS = {
 	'/alojamiento': Alojamiento,
 	'/experiencias': Experiencias,
 	'/gastronomia': Gastronomia,
+	'/galeria': Galeria,
 	'/textos': Textos,
 } as const;
 import { Aviso, Cargando, avisar, claseBoton, contenedor } from './components/ui';

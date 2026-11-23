@@ -6,7 +6,8 @@
  */
 import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { categories, galeria, galeriaText } from '../../data/galeria';
+import { categories, galeriaText } from '../../data/galeria';
+import { en, foto, galeriaSitio } from '../../data/editable';
 import type { Lang } from '../../i18n/ui';
 
 interface Props {
@@ -15,19 +16,12 @@ interface Props {
 const { lang } = Astro.props;
 const t = galeriaText[lang];
 
-const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/img/*.jpg', { eager: true });
-const photo = (name: string) => {
-	const m = files[`../../assets/img/${name}.jpg`];
-	if (!m) throw new Error(`Falta la foto src/assets/img/${name}.jpg`);
-	return m.default;
-};
+// Fotos de src/content/datos/galeria.json (las edita el panel /admin)
 const items = await Promise.all(
-	galeria.map(async (g) => ({
-		...g,
-		src: photo(g.file),
-		alt: lang === 'es' ? g.es : g.en,
-		full: (await getImage({ src: photo(g.file), width: 1600, format: 'webp' })).src,
-	})),
+	galeriaSitio.map(async (g) => {
+		const src = foto(g.foto);
+		return { cat: g.categoria, src, alt: en(g.alt, lang), full: (await getImage({ src, width: 1600, format: 'webp' })).src };
+	}),
 );
 ---
 
