@@ -59,6 +59,8 @@ src/
 
 ## Panel de contenido (`/admin`)
 
+**Guía de uso para el hostal (una página):** [`docs/guia-del-panel.md`](docs/guia-del-panel.md).
+
 ### Acceso compartido del equipo: `AdminAlpina` / `Admin123!`
 
 Proyecto académico: todo el equipo entra con el mismo usuario y contraseña.
