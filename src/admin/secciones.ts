@@ -19,6 +19,17 @@ export const SECCIONES: Seccion[] = [
 	{ id: 'tablero', ruta: '/', texto: 'Tablero' },
 	{ id: 'noticias', ruta: '/noticias', texto: 'Noticias' },
 	{
+		id: 'experiencias',
+		ruta: '/experiencias',
+		texto: 'Experiencias',
+		archivo: 'experiencias.json',
+		enCommit: 'las experiencias',
+		resumen: (d) => {
+			const sin = d.items.filter((x: { foto: string }) => !x.foto).length;
+			return `${d.items.length} experiencias${sin ? ` · ${sin} con foto pendiente` : ''}`;
+		},
+	},
+	{
 		id: 'gastronomia',
 		ruta: '/gastronomia',
 		texto: 'Gastronomía',

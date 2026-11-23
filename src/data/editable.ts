@@ -12,6 +12,7 @@ import type { Lang } from '../i18n/ui';
 import reconocimientosJson from '../content/datos/reconocimientos.json';
 import menuJson from '../content/datos/menu.json';
 import sitioJson from '../content/datos/sitio.json';
+import experienciasJson from '../content/datos/experiencias.json';
 
 // ---------- Fotos ----------
 
@@ -86,3 +87,20 @@ validar(
 	sitioJson,
 	'sitio.json',
 );
+
+// ---------- Experiencias ----------
+
+const experiencia = z
+	.object({
+		titulo: bilingueObligatorio,
+		texto: bilingue,
+		/** Datos breves, por ejemplo «2 días · ascenso de 7 h». */
+		duracion: bilingue,
+		dificultad: z.enum(['', 'baja', 'media', 'alta']),
+		/** Vacía = «Foto pendiente». */
+		foto: rutaFoto,
+		alt: bilingue,
+	})
+	.refine((x) => !x.foto || x.alt.es.trim(), 'Una experiencia con foto necesita su descripción en español');
+
+export const experienciasSitio = validar(z.object({ aviso: bilingue, items: z.array(experiencia) }), experienciasJson, 'experiencias.json');

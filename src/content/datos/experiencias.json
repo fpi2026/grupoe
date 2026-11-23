@@ -1,0 +1,128 @@
+{
+	"aviso": {
+		"es": "Todas las experiencias están sujetas al clima, a la dificultad del recorrido, a la disponibilidad de guías y a reserva previa.",
+		"en": "All experiences depend on weather, trail difficulty, guide availability and advance booking."
+	},
+	"items": [
+		{
+			"titulo": {
+				"es": "Caminata al bosque nebuloso",
+				"en": "Cloud forest hike"
+			},
+			"texto": {
+				"es": "Una travesía de dos días hacia el bosque nebuloso, con guía.",
+				"en": "A two-day trek into the cloud forest, with a guide."
+			},
+			"duracion": {
+				"es": "2 días · ascenso de 7 h",
+				"en": "2 days · 7 h ascent"
+			},
+			"dificultad": "",
+			"foto": "img/panorama.jpg",
+			"alt": {
+				"es": "Vista panorámica del valle y las montañas desde la terraza",
+				"en": "Panoramic view of the valley and mountains from the terrace"
+			}
+		},
+		{
+			"titulo": {
+				"es": "Rapel en cascada",
+				"en": "Waterfall rappelling"
+			},
+			"texto": {
+				"es": "Descenso con cuerda junto a la caída de agua.",
+				"en": "A rope descent beside the falling water."
+			},
+			"duracion": {
+				"es": "",
+				"en": ""
+			},
+			"dificultad": "",
+			"foto": "",
+			"alt": {
+				"es": "",
+				"en": ""
+			}
+		},
+		{
+			"titulo": {
+				"es": "Cascada El Limo",
+				"en": "El Limo Waterfall"
+			},
+			"texto": {
+				"es": "Una caminata interpretativa por el bosque hasta la cascada: paisaje, vegetación y la importancia de los bosques que protegen el agua.",
+				"en": "An interpretive walk through the forest to the waterfall: landscape, vegetation and why forests that protect water matter."
+			},
+			"duracion": {
+				"es": "",
+				"en": ""
+			},
+			"dificultad": "",
+			"foto": "img/cascada.jpg",
+			"alt": {
+				"es": "Grupo de visitantes en la poza al pie de la Cascada El Limo",
+				"en": "Group of visitors in the pool at the foot of El Limo Waterfall"
+			}
+		},
+		{
+			"titulo": {
+				"es": "Observación de aves",
+				"en": "Birdwatching"
+			},
+			"texto": {
+				"es": "Recorridos para observar y escuchar las aves que viven en el bosque.",
+				"en": "Walks to watch and listen to the birds that live in the forest."
+			},
+			"duracion": {
+				"es": "",
+				"en": ""
+			},
+			"dificultad": "",
+			"foto": "",
+			"alt": {
+				"es": "",
+				"en": ""
+			}
+		},
+		{
+			"titulo": {
+				"es": "Baños de bosque",
+				"en": "Forest bathing"
+			},
+			"texto": {
+				"es": "Caminar despacio, mirar de cerca: hongos, musgos, insectos y silencio.",
+				"en": "Walk slowly and look closely: fungi, moss, insects and silence."
+			},
+			"duracion": {
+				"es": "",
+				"en": ""
+			},
+			"dificultad": "",
+			"foto": "img/hongo-rojo.jpg",
+			"alt": {
+				"es": "Pequeño hongo rojo entre hojas secas del bosque",
+				"en": "Small red mushroom among dry forest leaves"
+			}
+		},
+		{
+			"titulo": {
+				"es": "Museo Geológico y Paleontológico",
+				"en": "Geological and Paleontological Museum"
+			},
+			"texto": {
+				"es": "Fósiles de organismos marinos del Cretácico, como amonitas, rudistas, bivalvos y gasterópodos, que cuentan cómo esta montaña fue mar.",
+				"en": "Fossils of Cretaceous marine organisms, such as ammonites, rudists, bivalves and gastropods, that tell how this mountain was once sea."
+			},
+			"duracion": {
+				"es": "Experiencia cercana",
+				"en": "Nearby experience"
+			},
+			"dificultad": "",
+			"foto": "img/amonitas-2.jpg",
+			"alt": {
+				"es": "Colección de amonitas fósiles pulidas sobre una mesa",
+				"en": "Collection of polished fossil ammonites on a table"
+			}
+		}
+	]
+}

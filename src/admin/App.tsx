@@ -12,10 +12,12 @@ import { EditorNoticia } from './components/EditorNoticia';
 import { Reconocimientos } from './components/Reconocimientos';
 import { Gastronomia } from './components/Gastronomia';
 import { Textos } from './components/Textos';
+import { Experiencias } from './components/Experiencias';
 
 /** Pantallas que editan un JSON de src/content/datos/ (ruta → componente). */
 const DOCUMENTOS = {
 	'/reconocimientos': Reconocimientos,
+	'/experiencias': Experiencias,
 	'/gastronomia': Gastronomia,
 	'/textos': Textos,
 } as const;
