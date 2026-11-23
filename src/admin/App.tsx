@@ -9,7 +9,7 @@ import { ListaNoticias } from './components/ListaNoticias';
 import { EditorNoticia } from './components/EditorNoticia';
 import { Aviso, Cargando } from './components/ui';
 import { clearToken, getToken, mensajeDeError, repo, verificarToken, type Permisos } from './lib/github';
-import { esDemo, nombreDemo, restablecerDemo, salirDemo } from './lib/demo';
+import { esDemo, nombreDemo, restablecerDemo, salirDemo, sesionCompartida } from './lib/demo';
 import { cargarNoticias, type Repo } from './lib/noticias';
 
 const leerRuta = () => location.hash.replace(/^#/, '') || '/';
@@ -26,7 +26,7 @@ export default function App() {
 
 	// Retomar la sesión si sigue abierta en esta pestaña (demostración o token)
 	useEffect(() => {
-		if (esDemo()) return setSesion({ nombre: nombreDemo, escritura: true });
+		if (sesionCompartida()) return setSesion({ nombre: nombreDemo, escritura: true });
 		if (!getToken()) return setSesion(null);
 		verificarToken()
 			.then((p) => setSesion(p.escritura ? p : null))

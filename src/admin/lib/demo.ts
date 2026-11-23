@@ -5,8 +5,10 @@
  * - Parte de las noticias e imágenes del sitio publicado (admin/demo-repo.json, generado al compilar).
  * - Los cambios se guardan SOLO en este navegador (localStorage): no llegan al repositorio
  *   ni al sitio. "Restablecer" vuelve al estado publicado.
- * - El acceso con usuario y contraseña genéricos es solo para practicar: no protege nada,
- *   porque este modo no puede escribir en GitHub.
+ * - Usuario y contraseña compartidos (AdminAlpina): si al compilar existe el token general
+ *   (PUBLIC_GH_TOKEN, secret CMS_TOKEN en Actions), la sesión guarda y publica de verdad con ese
+ *   token; si no existe (por ejemplo, en local), la sesión es de demostración.
+ *   La comprobación ocurre en el navegador: es una puerta de práctica, no seguridad.
  */
 import { AxiosError, AxiosHeaders, type AxiosAdapter, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
@@ -18,11 +20,17 @@ const USUARIO = 'AdminAlpina';
 /** Segundos que tarda la "publicación" simulada. */
 const DURACION_PUBLICACION = 20;
 
-export const esDemo = () => sessionStorage.getItem(CLAVE_SESION) === '1';
-export const salirDemo = () => sessionStorage.removeItem(CLAVE_SESION);
-export const nombreDemo = `${USUARIO} · demostración`;
+/** Token general del proyecto, insertado al compilar (vacío en local). */
+export const TOKEN_GENERAL: string | undefined = import.meta.env.PUBLIC_GH_TOKEN || undefined;
 
-/** Comprueba las credenciales de práctica y abre la sesión de demostración. */
+/** Hay una sesión abierta con el usuario compartido. */
+export const sesionCompartida = () => sessionStorage.getItem(CLAVE_SESION) === '1';
+/** Sesión compartida sin token general: los cambios no salen del navegador. */
+export const esDemo = () => sesionCompartida() && !TOKEN_GENERAL;
+export const salirDemo = () => sessionStorage.removeItem(CLAVE_SESION);
+export const nombreDemo = TOKEN_GENERAL ? USUARIO : `${USUARIO} · demostración`;
+
+/** Comprueba el usuario y la contraseña compartidos y abre la sesión. */
 export async function entrarDemo(usuario: string, clave: string): Promise<boolean> {
 	const datos = new TextEncoder().encode(`${usuario.trim()}:${clave}`);
 	const huella = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', datos)), (b) => b.toString(16).padStart(2, '0')).join('');

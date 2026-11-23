@@ -4,7 +4,7 @@
  * - Token de acceso de GitHub (fase 1 del plan) → guarda en el repositorio y publica de verdad.
  */
 import { useState } from 'preact/hooks';
-import { entrarDemo, nombreDemo } from '../lib/demo';
+import { TOKEN_GENERAL, entrarDemo, nombreDemo, salirDemo } from '../lib/demo';
 import { clearToken, mensajeDeError, repo, setToken, verificarToken, type Permisos } from '../lib/github';
 import { Aviso, Boton, campo } from './ui';
 
@@ -17,7 +17,7 @@ export function Login({ onEntrar }: { onEntrar: (p: Permisos) => void }) {
 			</div>
 			<LoginDemo onEntrar={onEntrar} />
 			<details class="flex flex-col gap-4 text-sm">
-				<summary class="cursor-pointer font-semibold text-ink">Entrar con un token de GitHub (guarda y publica de verdad)</summary>
+				<summary class="cursor-pointer font-semibold text-ink">Entrar con un token personal de GitHub</summary>
 				<div class="mt-4 flex flex-col gap-6">
 					<LoginToken onEntrar={onEntrar} />
 				</div>
@@ -31,11 +31,26 @@ function LoginDemo({ onEntrar }: { onEntrar: (p: Permisos) => void }) {
 	const [usuario, setUsuario] = useState('');
 	const [clave, setClave] = useState('');
 	const [error, setError] = useState('');
+	const [enviando, setEnviando] = useState(false);
 
 	async function entrar(e: Event) {
 		e.preventDefault();
-		if (await entrarDemo(usuario, clave)) onEntrar({ nombre: nombreDemo, escritura: true });
-		else setError('Usuario o contraseña incorrectos.');
+		setError('');
+		if (!(await entrarDemo(usuario, clave))) return setError('Usuario o contraseña incorrectos.');
+		if (!TOKEN_GENERAL) return onEntrar({ nombre: nombreDemo, escritura: true });
+		// Con token general: comprobar que sigue vigente y que puede escribir
+		setEnviando(true);
+		try {
+			const p = await verificarToken();
+			if (p.escritura) return onEntrar({ nombre: nombreDemo, escritura: true });
+			salirDemo();
+			setError('El token general del panel no tiene permiso de escritura (Contents: lectura y escritura).');
+		} catch (err) {
+			setError(mensajeDeError(err)); // antes de cerrar la sesión: el mensaje depende de ella
+			salirDemo();
+		} finally {
+			setEnviando(false);
+		}
 	}
 
 	return (
@@ -63,10 +78,13 @@ function LoginDemo({ onEntrar }: { onEntrar: (p: Permisos) => void }) {
 				/>
 			</label>
 			{error && <Aviso tipo="error">{error}</Aviso>}
-			<Boton type="submit">Entrar</Boton>
+			<Boton type="submit" disabled={enviando}>
+				{enviando ? 'Comprobando…' : 'Entrar'}
+			</Boton>
 			<p class="m-0 text-sm text-muted">
-				Modo demostración: puedes crear, editar y borrar noticias para practicar. Los cambios se guardan solo en este navegador y no
-				se publican en el sitio.
+				{TOKEN_GENERAL
+					? 'Acceso compartido del equipo: lo que guardes se publica en el sitio en 1 o 2 minutos.'
+					: 'Modo demostración: puedes crear, editar y borrar noticias para practicar. Los cambios se guardan solo en este navegador y no se publican en el sitio.'}
 			</p>
 		</form>
 	);

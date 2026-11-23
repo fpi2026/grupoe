@@ -59,15 +59,21 @@ src/
 
 ## Panel de contenido (`/admin`)
 
-### Modo demostración (para practicar)
+### Acceso compartido del equipo: `AdminAlpina` / `Admin123!`
 
-Usuario **`AdminAlpina`** y contraseña **`Admin123!`**. Abre el panel completo (crear, editar, borrar noticias, subir portadas, tablero), pero **no escribe en GitHub**: los cambios se guardan solo en el navegador de quien los hace (`localStorage`) y el sitio no cambia. La publicación del tablero es simulada. *Restablecer demostración* vuelve al contenido publicado.
+Proyecto académico: todo el equipo entra con el mismo usuario y contraseña.
 
-- Parte de `admin/demo-repo.json`, que se genera al compilar (`src/pages/admin/demo-repo.json.ts`) con las noticias del repositorio; las imágenes se descargan de `raw.githubusercontent.com` (el repositorio es público).
-- La comprobación de usuario y contraseña ocurre en el navegador: **no es seguridad**, solo una puerta de práctica, y por eso este modo no puede escribir en el repositorio. Si el hostal elige este tipo de acceso para el panel real, hace falta un servidor (por ejemplo, un Worker de Cloudflare) que guarde las contraseñas y el token de GitHub.
-- Código: `src/admin/lib/demo.ts` (adaptador de axios que imita la API de GitHub).
+- **Con token general** (secret `CMS_TOKEN` en *Settings → Secrets and variables → Actions*): al compilar, el flujo lo pasa como `PUBLIC_GH_TOKEN` y el panel guarda y **publica de verdad** con él. Los commits aparecen a nombre de la cuenta dueña del token.
+- **Sin token general** (por ejemplo, en local): modo demostración. Los cambios se guardan solo en el navegador (`localStorage`), el sitio no cambia, la publicación del tablero es simulada y *Restablecer demostración* vuelve al contenido publicado. Parte de `admin/demo-repo.json` (`src/pages/admin/demo-repo.json.ts`); las imágenes se descargan de `raw.githubusercontent.com`. Código: `src/admin/lib/demo.ts`.
 
-### Con un token de GitHub (guarda y publica)
+**El token general queda dentro del JavaScript del panel publicado** y cualquiera puede leerlo; la contraseña se comprueba en el navegador y no lo protege. Se acepta por ser un proyecto escolar con una organización temporal, con estas condiciones:
+
+1. Token *fine-grained* (nunca *classic*): *Resource owner* `fpi2026`, *Repository access* **solo `grupoe`**.
+2. Permisos: **Contents** lectura y escritura y **Actions** solo lectura. Nada más (sin *Workflows* ni *Administration*): así no puede tocar el flujo de publicación, la configuración del repositorio, otros repositorios ni la cuenta personal de nadie.
+3. Vencimiento al final de la materia. Si alguien lo usa mal: revocarlo en GitHub y revertir los commits.
+4. Para un uso real (el hostal) hace falta un servidor que guarde el token (por ejemplo, un Worker de Cloudflare).
+
+### Con un token personal de GitHub
 
 El panel lee y escribe las noticias del repositorio con la API de GitHub. Cada guardado es **un commit** en `main` (noticia ES, EN y portada juntas) y el flujo de Actions vuelve a compilar el sitio. No hay servidor ni base de datos.
 
@@ -75,7 +81,7 @@ El panel lee y escribe las noticias del repositorio con la API de GitHub. Cada g
    - *Resource owner*: la organización `fpi2026`; *Repository access*: solo `grupoe`.
    - Permisos: **Contents** lectura y escritura; **Actions** solo lectura (estado de la publicación).
    - Con fecha de vencimiento. Si la organización lo exige, un administrador debe aprobarlo.
-2. Abrir `/admin/` (en local: `http://localhost:4321/grupoe/admin/`), desplegar *Entrar con un token de GitHub* y pegar el token. Se guarda en `sessionStorage` y se borra al cerrar la pestaña; nunca va en el código.
+2. Abrir `/admin/` (en local: `http://localhost:4321/grupoe/admin/`), desplegar *Entrar con un token personal de GitHub* y pegar el token. Se guarda en `sessionStorage` y se borra al cerrar la pestaña; nunca va en el código.
 3. **Noticias:** crear, editar y borrar, con textos en español e inglés, vista previa en Markdown y foto de portada (se reduce a 1600 px y WebP en el navegador). Una noticia sin marcar como *Publicada* es un borrador: se guarda, pero no aparece en el sitio.
 4. Si alguien cambió la misma noticia mientras se editaba, el panel avisa y no sobrescribe.
 

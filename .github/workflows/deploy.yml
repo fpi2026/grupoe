@@ -30,6 +30,11 @@ jobs:
         uses: withastro/action@v6
         with:
           build-cmd: npm run check && npm run build
+        env:
+          # Token general del panel /admin (usuario compartido AdminAlpina). Queda dentro del
+          # JavaScript del panel publicado: solo debe tener acceso a este repositorio.
+          # Sin el secret CMS_TOKEN, el usuario compartido entra en modo demostración.
+          PUBLIC_GH_TOKEN: ${{ secrets.CMS_TOKEN }}
 
   # Publica en cada push a main y al ejecutar el flujo a mano (Run workflow)
   deploy:
