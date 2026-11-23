@@ -68,6 +68,7 @@ const alternates = (Object.keys(languages) as Lang[])
 		<script is:inline>
 			try {
 				var d = document.documentElement;
+				d.classList.add('js');
 				d.dataset.theme = localStorage.getItem('cael-theme') === 'night' ? 'night' : 'day';
 				if (sessionStorage.getItem('cael-tr')) d.classList.add('cael-tr');
 			} catch (e) {}

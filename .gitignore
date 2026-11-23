@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Caché de imágenes procesadas por Astro
+.astro-cache/

@@ -250,16 +250,19 @@ const t = es
 			}
 		}
 
-		// Carga diferida: three.js y el relieve solo cuando el mapa se acerca
+		// Carga diferida: three.js y el relieve solo cuando el mapa se acerca, y nunca antes de
+		// que la página termine de cargar (así no retrasa el texto ni las fotos)
 		const io = new IntersectionObserver(
 			(entries) => {
 				if (entries[0]?.isIntersecting) {
 					io.disconnect();
-					start();
+					if ('requestIdleCallback' in window) requestIdleCallback(() => start(), { timeout: 1500 });
+					else setTimeout(start, 200);
 				}
 			},
-			{ rootMargin: '400px 0px' },
+			{ threshold: 0.2 },
 		);
-		io.observe(root);
+		if (document.readyState === 'complete') io.observe(root);
+		else addEventListener('load', () => io.observe(root), { once: true });
 	});
 </script>

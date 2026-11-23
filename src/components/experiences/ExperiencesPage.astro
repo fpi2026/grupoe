@@ -1,6 +1,6 @@
 ---
 /** Página de Experiencias (Experiencias.dc.html); la usan /experiencias/ y /en/experiences/. */
-import { Image } from 'astro:assets';
+import { Picture, Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import montana from '../../assets/img/montana.jpg';
 import { experiencias } from '../../data/experiencias';
@@ -24,11 +24,14 @@ const ask = (title: string) => `https://wa.me/${contact.whatsapp}?text=${encodeU
 
 <BaseLayout lang={lang} route="experiencias" title={c.meta.title} description={c.meta.description}>
 	<section class="relative flex min-h-[min(78vh,720px)] items-end overflow-hidden bg-[#0D1410]">
-		<Image
+		<Picture
 			src={montana}
 			alt={c.hero.alt}
-			widths={[640, 960, 1280, 1600]}
+			formats={['avif', 'webp']}
+			pictureAttributes={{ class: 'contents' }}
+			widths={[480, 768, 1080, 1440]}
 			sizes="100vw"
+			quality={45}
 			loading="eager"
 			fetchpriority="high"
 			class="absolute inset-0 size-full object-cover"

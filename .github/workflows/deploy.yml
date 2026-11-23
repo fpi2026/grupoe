@@ -26,6 +26,15 @@ jobs:
       - name: Descargar el repositorio
         uses: actions/checkout@v7
 
+      # Las fotos en AVIF tardan en codificarse: se guardan entre publicaciones y solo se
+      # procesan las nuevas (por ejemplo, las que sube el panel)
+      - name: Recuperar la caché de imágenes
+        uses: actions/cache@v4
+        with:
+          path: .astro-cache
+          key: astro-imagenes-${{ hashFiles('src/assets/**', 'astro.config.mjs', 'package-lock.json') }}
+          restore-keys: astro-imagenes-
+
       - name: Revisar tipos, compilar y subir el sitio
         uses: withastro/action@v6
         with:

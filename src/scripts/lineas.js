@@ -219,6 +219,12 @@ void main(){
       gl.uniform1i(this.u.ta, 0); gl.uniform1i(this.u.tb, 1);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
       this.cw = 0; this.ch = 0; this.ro = new ResizeObserver(() => { const r = canvas.getBoundingClientRect(); this.cw = r.width; this.ch = r.height; this.last = -1; }); this.ro.observe(canvas);
+      this.load(srcs);
+    }
+    /** Descarga las texturas (se puede llamar después, cuando la sección se acerca). */
+    load(srcs) {
+      if (!this.ok) return;
+      const gl = this.gl;
       this.tex = srcs.map(() => null); this.asp = srcs.map(() => 1); this.last = -1;
       srcs.forEach((src, i) => { const im = new Image(); im.onload = () => {
         const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);

@@ -80,7 +80,7 @@ const morphSrcs = JSON.stringify(textures.map((x) => x.src));
 		</div>
 		<p class="mt-10 mb-0 text-sm text-muted">
 			{t.foot}{' '}
-			<a href={localizedPath('experiencias', lang)}>{t.footLink} →</a>
+			<a href={localizedPath('experiencias', lang)} class="underline underline-offset-4">{t.footLink} →</a>
 		</p>
 	</div>
 </section>
@@ -142,7 +142,18 @@ const morphSrcs = JSON.stringify(textures.map((x) => x.src));
 		const dots = [...section.querySelectorAll<HTMLElement>('[data-dot]')];
 		const srcs = JSON.parse(morphCanvas.dataset.srcs ?? '[]') as string[];
 
-		const morph = new CaelMorph(morphCanvas, srcs);
+		// Las texturas (4 fotos de 1200 px) se piden cuando la sección se acerca, no al abrir la página
+		const morph = new CaelMorph(morphCanvas, []);
+		const cerca = new IntersectionObserver(
+			(es) => {
+				if (!es[0]?.isIntersecting) return;
+				cerca.disconnect();
+				morph.load(srcs);
+			},
+			{ rootMargin: '600px 0px' },
+		);
+		if (document.readyState === 'complete') cerca.observe(section);
+		else addEventListener('load', () => cerca.observe(section), { once: true });
 		const engine = new CaelLines(lines, texts, morph);
 		let active = -1;
 		let HEADER = 116;

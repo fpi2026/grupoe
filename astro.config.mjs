@@ -15,6 +15,9 @@ export default defineConfig({
   site,
   base,
   output: 'static',
+  // Caché de imágenes procesadas (AVIF/WebP). Fuera de node_modules para guardarla entre
+  // ejecuciones de GitHub Actions (ver .github/workflows/deploy.yml).
+  cacheDir: './.astro-cache',
   trailingSlash: 'ignore',
 
   // Español en la raíz (/) e inglés en /en/
@@ -30,6 +33,9 @@ export default defineConfig({
     // cuando el mapa se acerca a la pantalla.
     build: { chunkSizeWarningLimit: 700 },
   },
+
+  // El CSS (~14 KB) va dentro de cada página: evita una petición que bloquea el primer pintado.
+  build: { inlineStylesheets: 'always' },
 
   integrations: [preact()],
 });

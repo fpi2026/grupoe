@@ -1,6 +1,6 @@
 ---
 /** Portada de Inicio: foto de día y de noche según el tema, neblina y llamadas a la acción. */
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import Fog from '../Fog.astro';
 import dia from '../../assets/img/dia-cabanas.jpg';
 import noche from '../../assets/img/noche-cabana.jpg';
@@ -14,12 +14,16 @@ interface Props {
 }
 const { lang, t } = Astro.props;
 const img = 'absolute inset-0 size-full object-cover transition-opacity duration-[1.4s] ease-out';
-const widths = [640, 960, 1280, 1600, 2000];
+const widths = [480, 768, 1080, 1440, 2000];
+// AVIF con WebP de respaldo
+const formats: ('avif' | 'webp')[] = ['avif', 'webp'];
+// AVIF con calidad 45: mitad de peso que WebP 62 sin diferencia visible (fondo bajo un degradado)
+const quality = 45;
 ---
 
 <section aria-label={t.titleA + ' ' + t.titleB} class="relative flex min-h-[calc(100svh-108px)] items-end overflow-hidden bg-[#0D1410]">
-	<Image src={dia} alt={t.altDay} widths={widths} sizes="100vw" loading="eager" fetchpriority="high" class={img} style="object-position:50% 45%;opacity:var(--day)" />
-	<Image src={noche} alt={t.altNight} widths={widths} sizes="100vw" loading="eager" class={img} style="object-position:50% 72%;opacity:var(--night)" />
+	<Picture src={dia} alt={t.altDay} formats={formats} widths={widths} sizes="100vw" quality={quality} loading="eager" fetchpriority="high" pictureAttributes={{ class: 'contents' }} class={`hero-dia ${img}`} style="object-position:50% 45%;opacity:var(--day)" />
+	<Picture src={noche} alt={t.altNight} formats={formats} widths={widths} sizes="100vw" quality={quality} loading="lazy" pictureAttributes={{ class: 'contents' }} class={`hero-noche ${img}`} style="object-position:50% 72%;opacity:var(--night)" />
 	<div
 		aria-hidden="true"
 		class="absolute inset-0"
@@ -116,4 +120,18 @@ const widths = [640, 960, 1280, 1600, 2000];
 	);
 	window.addEventListener('cael-prefs', sync);
 	sync();
+</script>
+
+<style>
+	/* La foto del otro tema no compite con la principal: se descarga después de cargar la
+	   página (las imágenes diferidas ocultas no se piden). Luego el cambio de tema funde las dos. */
+	:global(html:not(.hero-listo)[data-theme='day'] .hero-noche) {
+		display: none;
+	}
+</style>
+
+<script>
+	const listo = () => document.documentElement.classList.add('hero-listo');
+	if (document.readyState === 'complete') listo();
+	else addEventListener('load', listo, { once: true });
 </script>
