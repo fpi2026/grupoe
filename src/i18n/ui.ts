@@ -63,8 +63,8 @@ export const ui = {
 		'nav.label': 'Principal',
 
 		'header.skip': 'Saltar al contenido',
-		'header.home': 'Cabañas Alpinas El Limo, inicio',
-		'header.brand': 'CABAÑAS ALPINAS',
+		'header.home': 'inicio',
+		'header.brand': 'Cabañas Alpinas',
 		'header.brandSub': enIdioma(sitio.lema, 'es'),
 		'header.langGroup': 'Idioma / Language',
 		'header.theme': 'Cambiar entre tema día y noche',
@@ -103,8 +103,8 @@ export const ui = {
 		'nav.label': 'Main',
 
 		'header.skip': 'Skip to content',
-		'header.home': 'Cabañas Alpinas El Limo, home',
-		'header.brand': 'CABAÑAS ALPINAS',
+		'header.home': 'home',
+		'header.brand': 'Cabañas Alpinas',
 		'header.brandSub': enIdioma(sitio.lema, 'en'),
 		'header.langGroup': 'Idioma / Language',
 		'header.theme': 'Switch between day and night theme',

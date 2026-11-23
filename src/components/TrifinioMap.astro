@@ -68,11 +68,11 @@ const t = es
 		data-borders={JSON.stringify(borders)}
 		data-places={JSON.stringify(places)}
 		data-error={t.error}
-		role="img"
+		role="group"
 		aria-label={t.title}
 		class="map relative aspect-[5/4] min-h-[360px] overflow-hidden"
 	>
-		<div data-stage class="absolute inset-0 cursor-grab active:cursor-grabbing"></div>
+		<div data-stage role="img" aria-label={t.title} class="absolute inset-0 cursor-grab active:cursor-grabbing"></div>
 		<div data-labels class="pointer-events-none absolute inset-0 overflow-hidden"></div>
 		<div class="ui zm">
 			<button type="button" data-zoom-in aria-label={t.zoomIn}>+</button>
