@@ -10,6 +10,13 @@ import { Tablero } from './components/Tablero';
 import { ListaNoticias } from './components/ListaNoticias';
 import { EditorNoticia } from './components/EditorNoticia';
 import { Reconocimientos } from './components/Reconocimientos';
+import { Gastronomia } from './components/Gastronomia';
+
+/** Pantallas que editan un JSON de src/content/datos/ (ruta → componente). */
+const DOCUMENTOS = {
+	'/reconocimientos': Reconocimientos,
+	'/gastronomia': Gastronomia,
+} as const;
 import { Aviso, Cargando, avisar, claseBoton, contenedor } from './components/ui';
 import { clearToken, getToken, mensajeDeError, verificarToken, type Permisos } from './lib/github';
 import { esDemo, nombreDemo, restablecerDemo, salirDemo, sesionSinToken } from './lib/demo';
@@ -132,11 +139,14 @@ export default function App({ fondoLogin }: { fondoLogin: string }) {
 	};
 
 	const editar = /^\/noticias\/editar\/([a-z0-9-]+)$/.exec(ruta);
-	const esEditor = ruta === '/noticias/nueva' || Boolean(editar) || ruta === '/reconocimientos';
+	const esEditor = ruta === '/noticias/nueva' || Boolean(editar) || ruta in DOCUMENTOS;
 	let pantalla;
 	if (ruta === '/') pantalla = <Tablero datos={datos} nombre={sesion.nombre} />;
 	else if (ruta === '/noticias') pantalla = <ListaNoticias datos={datos} />;
-	else if (ruta === '/reconocimientos') pantalla = <Reconocimientos key={`rec-${version}`} repo={datos} onGuardado={seccionGuardada} />;
+	else if (ruta in DOCUMENTOS) {
+		const Documento = DOCUMENTOS[ruta as keyof typeof DOCUMENTOS];
+		pantalla = <Documento key={`${ruta}-${version}`} repo={datos} onGuardado={seccionGuardada} />;
+	}
 	else if (!datos) pantalla = error ? null : <div class={contenedor}><Cargando texto="Cargando noticias…" /></div>;
 	else if (ruta === '/noticias/nueva')
 		pantalla = <EditorNoticia key={`nueva-${version}`} datos={datos} slug={null} onGuardado={guardado} onBorrado={borrado} onRecargar={recargar} />;

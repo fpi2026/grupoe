@@ -10,6 +10,7 @@ import type { ImageMetadata } from 'astro';
 import { z } from 'astro/zod';
 import type { Lang } from '../i18n/ui';
 import reconocimientosJson from '../content/datos/reconocimientos.json';
+import menuJson from '../content/datos/menu.json';
 
 // ---------- Fotos ----------
 
@@ -55,3 +56,14 @@ const reconocimiento = z.object({
 
 export const reconocimientos = validar(z.object({ items: z.array(reconocimiento) }), reconocimientosJson, 'reconocimientos.json').items;
 export type Reconocimiento = z.infer<typeof reconocimiento>;
+
+// ---------- Gastronomía ----------
+
+const menu = z.object({
+	/** Se destaca junto al título de la página. */
+	nota: bilingueObligatorio,
+	platillos: z.array(z.object({ nombre: bilingueObligatorio, descripcion: bilingue })),
+	fotos: z.array(z.object({ foto: rutaFoto.refine((r) => r !== '', 'Falta la foto'), alt: bilingueObligatorio })),
+});
+
+export const menuGastronomia = validar(menu, menuJson, 'menu.json');

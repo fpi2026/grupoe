@@ -19,6 +19,14 @@ export const SECCIONES: Seccion[] = [
 	{ id: 'tablero', ruta: '/', texto: 'Tablero' },
 	{ id: 'noticias', ruta: '/noticias', texto: 'Noticias' },
 	{
+		id: 'gastronomia',
+		ruta: '/gastronomia',
+		texto: 'Gastronomía',
+		archivo: 'menu.json',
+		enCommit: 'el menú de gastronomía',
+		resumen: (d) => `${d.platillos.length} ${d.platillos.length === 1 ? 'platillo' : 'platillos'} · ${d.fotos.length} ${d.fotos.length === 1 ? 'foto' : 'fotos'}`,
+	},
+	{
 		id: 'reconocimientos',
 		ruta: '/reconocimientos',
 		texto: 'Reconocimientos',

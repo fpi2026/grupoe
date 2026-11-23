@@ -1,0 +1,71 @@
+{
+	"nota": {
+		"es": "Todas las comidas son con reservación.",
+		"en": "All meals are by reservation."
+	},
+	"platillos": [
+		{
+			"nombre": {
+				"es": "Desayunos típicos",
+				"en": "Traditional breakfasts"
+			},
+			"descripcion": {
+				"es": "Desayunos salvadoreños: frijoles, huevos, plátano frito, queso y crema.",
+				"en": "Salvadoran breakfasts: beans, eggs, fried plantain, cheese and cream."
+			}
+		},
+		{
+			"nombre": {
+				"es": "Gallina india",
+				"en": "Free-range hen"
+			},
+			"descripcion": {
+				"es": "Gallina india de la granja.",
+				"en": "Free-range hen from the farm."
+			}
+		},
+		{
+			"nombre": {
+				"es": "Tilapia",
+				"en": "Tilapia"
+			},
+			"descripcion": {
+				"es": "Tilapia, entre otras preparaciones tradicionales.",
+				"en": "Tilapia, among other traditional dishes."
+			}
+		},
+		{
+			"nombre": {
+				"es": "Lácteos",
+				"en": "Dairy"
+			},
+			"descripcion": {
+				"es": "Queso, crema y otros lácteos de la zona.",
+				"en": "Cheese, cream and other local dairy."
+			}
+		}
+	],
+	"fotos": [
+		{
+			"foto": "img/desayuno-2.jpg",
+			"alt": {
+				"es": "Plato de frijoles, plátano frito, huevos y queso con el bosque al fondo",
+				"en": "Plate of beans, fried plantain, eggs and cheese with the forest in the background"
+			}
+		},
+		{
+			"foto": "img/terraza-noche.jpg",
+			"alt": {
+				"es": "Terraza de noche iluminada con guirnaldas de luces cálidas",
+				"en": "Terrace at night lit with warm string lights"
+			}
+		},
+		{
+			"foto": "img/estantes.jpg",
+			"alt": {
+				"es": "Estantes de ladrillo con botellas artesanales y cristalería",
+				"en": "Brick shelves with craft bottles and glassware"
+			}
+		}
+	]
+}

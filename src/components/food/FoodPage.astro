@@ -3,10 +3,8 @@
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import desayuno from '../../assets/img/desayuno.jpg';
-import desayuno2 from '../../assets/img/desayuno-2.jpg';
-import terrazaNoche from '../../assets/img/terraza-noche.jpg';
-import estantes from '../../assets/img/estantes.jpg';
 import { gastronomia } from '../../data/gastronomia';
+import { en, foto, menuGastronomia as menu } from '../../data/editable';
 import { contact, type Lang } from '../../i18n/ui';
 
 interface Props {
@@ -14,7 +12,6 @@ interface Props {
 }
 const { lang } = Astro.props;
 const c = gastronomia[lang];
-const gallery = [desayuno2, terrazaNoche, estantes];
 const wa = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(c.cta.message)}`;
 ---
 
@@ -26,7 +23,7 @@ const wa = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(c.cta.me
 				{c.intro.titleA} <em>{c.intro.titleB}</em>
 			</h1>
 			<p class="m-0 max-w-[480px] text-pretty text-muted">{c.intro.lead}</p>
-			<p class="m-0 border-l-[3px] border-amber pl-3.5 font-semibold">{c.intro.note}</p>
+			<p class="m-0 border-l-[3px] border-amber pl-3.5 font-semibold">{en(menu.nota, lang)}</p>
 		</div>
 		<Image
 			src={desayuno}
@@ -43,10 +40,10 @@ const wa = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(c.cta.me
 			<h2 id="men-t" class="mt-0 mb-9 font-serif text-[clamp(34px,4.4vw,60px)] font-normal">{c.menu.title}</h2>
 			<ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-10 p-0">
 				{
-					c.menu.items.map((d) => (
+					menu.platillos.map((d) => (
 						<li class="flex flex-col gap-2 border-t-2 border-ink pt-5 pb-7">
-							<h3 class="m-0 font-serif text-[28px] font-medium">{d.title}</h3>
-							<p class="m-0 text-muted">{d.text}</p>
+							<h3 class="m-0 font-serif text-[28px] font-medium">{en(d.nombre, lang)}</h3>
+							{en(d.descripcion, lang) && <p class="m-0 text-muted">{en(d.descripcion, lang)}</p>}
 						</li>
 					))
 				}
@@ -56,10 +53,10 @@ const wa = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(c.cta.me
 
 	<section aria-label={c.photosLabel} class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-3 py-[clamp(64px,8vw,120px)]">
 		{
-			gallery.map((src, i) => (
+			menu.fotos.map((f) => (
 				<Image
-					src={src}
-					alt={c.photos[i]!}
+					src={foto(f.foto)}
+					alt={en(f.alt, lang)}
 					widths={[480, 720, 960]}
 					sizes="(min-width: 960px) 440px, 100vw"
 					class="aspect-[4/3] w-full rounded-lg object-cover"
