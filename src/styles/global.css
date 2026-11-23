@@ -145,6 +145,12 @@
     scroll-behavior: smooth;
   }
 
+  /* <source> de <Picture> (AVIF/WebP): nunca ocupa lugar. Sin esto, con el <picture> en
+     display: contents, cada <source> se vuelve una celda de la cuadrícula o un elemento flex. */
+  source {
+    display: none;
+  }
+
   body {
     margin: 0;
     background-color: var(--bg);

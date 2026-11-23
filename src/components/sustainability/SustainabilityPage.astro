@@ -31,8 +31,9 @@ const icaColors = ['buena', 'moderada', 'sensibles', 'danina', 'muy-danina', 'pe
 	<section aria-label={c.solar.label} class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-3">
 		<Picture src={solarTecho} alt={c.solar.alts[0]} formats={['avif', 'webp']} pictureAttributes={{ class: 'contents' }} widths={[480, 768, 960]} sizes="(min-width: 960px) 440px, 100vw" quality={50} loading="eager" fetchpriority="high" class="aspect-[4/5] w-full rounded-lg object-cover" />
 		<Image src={solarBateria} alt={c.solar.alts[1]} widths={[480, 720, 960]} sizes="(min-width: 960px) 440px, 100vw" class="aspect-[4/5] w-full rounded-lg object-cover" />
-		<div class="flex flex-col justify-between gap-6 rounded-lg bg-surface p-[clamp(24px,3vw,36px)] transition-[background] duration-[.6s]">
-			<p class="m-0 font-serif text-[clamp(72px,8vw,120px)] leading-[.9] tracking-[-.03em]">
+		<div class="@container flex flex-col justify-between gap-6 rounded-lg bg-surface p-[clamp(24px,3vw,36px)] transition-[background] duration-[.6s]">
+			<!-- El tamaño depende del ancho del recuadro (cqi), no de la ventana: «5.85 kWp» siempre cabe -->
+			<p class="m-0 font-serif text-[clamp(48px,30cqi,120px)] leading-[.9] tracking-[-.03em] whitespace-nowrap">
 				5.85<span class="ml-2 text-[.32em] text-amber-ink">kWp</span>
 			</p>
 			<p class="m-0 text-muted">{c.solar.text}</p>
