@@ -13,6 +13,8 @@ interface Props {
 }
 const { lang } = Astro.props;
 const c = sostenibilidad[lang];
+// Colores de los niveles del ICA (mismos tokens que AirCard)
+const icaColors = ['buena', 'moderada', 'sensibles', 'danina', 'muy-danina', 'peligrosa'].map((n) => `var(--color-ica-${n})`);
 ---
 
 <BaseLayout lang={lang} route="sostenibilidad" title={c.meta.title} description={c.meta.description}>
@@ -70,6 +72,44 @@ const c = sostenibilidad[lang];
 				</dl>
 			</div>
 			<AirCard lang={lang} />
+		</div>
+
+		<!-- Qué es AireSV (información del sitio de AireSV) -->
+		<div class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-[clamp(32px,5vw,80px)] pb-[clamp(64px,8vw,120px)]">
+			<div class="flex flex-col gap-[18px] border-t-2 border-ink pt-8">
+				<h3 class="m-0 font-serif text-[clamp(26px,2.6vw,34px)] font-normal">{c.air.about.title}</h3>
+				{c.air.about.text.map((p) => <p class="m-0 max-w-[520px] text-muted">{p}</p>)}
+				<ul class="m-0 mt-2 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,210px),1fr))] gap-x-6 gap-y-4 p-0">
+					{
+						c.air.about.features.map((f) => (
+							<li class="flex flex-col gap-1 border-t border-line pt-3">
+								<strong class="font-semibold">{f.title}</strong>
+								<span class="text-[15.5px] text-muted">{f.text}</span>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+			<div class="flex flex-col gap-[18px] border-t-2 border-ink pt-8">
+				<h3 class="m-0 font-serif text-[clamp(26px,2.6vw,34px)] font-normal">{c.air.about.scaleTitle}</h3>
+				<p class="m-0 text-muted">{c.air.about.scaleNote}</p>
+				<ol class="m-0 flex list-none flex-col p-0">
+					{
+						c.air.about.levels.map((l, i) => (
+							<li class="grid grid-cols-[14px_1fr] gap-x-3 border-t border-line py-3">
+								<span aria-hidden="true" class="mt-1.5 size-3.5 rounded-full" style={{ background: icaColors[i] }} />
+								<div class="flex flex-col gap-0.5">
+									<span>
+										<strong class="font-semibold">{l.name}</strong> <span class="text-muted tabular-nums">· {l.range}</span>
+									</span>
+									<span class="text-[15.5px] text-muted">{l.advice}</span>
+								</div>
+							</li>
+						))
+					}
+				</ol>
+				<p class="m-0 text-sm text-muted">{c.air.about.credit}</p>
+			</div>
 		</div>
 	</section>
 </BaseLayout>
