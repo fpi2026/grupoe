@@ -31,13 +31,10 @@ jobs:
         with:
           build-cmd: npm run check && npm run build
 
-  # Mientras GitHub Pages no esté activado en el repositorio, solo se publica
-  # al ejecutar el flujo a mano (Actions → Run workflow). Para publicar en cada
-  # push a main, borrar la línea "if".
+  # Publica en cada push a main y al ejecutar el flujo a mano (Run workflow)
   deploy:
     name: Publicar
     needs: build
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

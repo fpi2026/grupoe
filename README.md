@@ -4,7 +4,7 @@ Sitio web bilingüe (español e inglés) de **Cabañas Alpinas El Limo**, en el 
 
 Propuesta académica – UES-FMOcc (FPI 2026, grupo E).
 
-Publicación prevista: <https://fpi2026.github.io/grupoe/>
+Sitio publicado: <https://fpi2026.github.io/grupoe/>
 
 ## Tecnologías
 
@@ -73,16 +73,10 @@ Variables opcionales (archivo `.env`): `PUBLIC_GH_OWNER`, `PUBLIC_GH_REPO`, `PUB
 
 ## Despliegue
 
-El flujo `.github/workflows/deploy.yml` tiene dos pasos:
+El flujo `.github/workflows/deploy.yml` corre en cada `push` a `main` (también los guardados del panel) y se puede ejecutar a mano desde **Actions** (*Run workflow*). Tiene dos pasos:
 
-- **Compilar:** en cada `push` a `main` revisa los tipos y compila el sitio. Sirve como comprobación automática.
-- **Publicar:** por ahora solo corre al ejecutar el flujo a mano desde la pestaña **Actions** (*Run workflow*), porque GitHub Pages todavía no está activado en el repositorio.
-
-Para activar la publicación (requiere permisos de administración del repositorio):
-
-1. **Settings → Pages → Build and deployment → Source:** elegir **GitHub Actions**.
-2. Ejecutar el flujo a mano desde **Actions**.
-3. Para publicar en cada `push`, borrar la línea `if:` del paso `deploy` en `deploy.yml`.
+- **Compilar:** revisa los tipos y compila el sitio. Si falla, no se publica nada y queda en línea la versión anterior.
+- **Publicar:** sube la compilación a GitHub Pages (*Settings → Pages → Source: GitHub Actions*).
 
 ### Cambiar la dirección de publicación
 
