@@ -13,10 +13,12 @@ import { Reconocimientos } from './components/Reconocimientos';
 import { Gastronomia } from './components/Gastronomia';
 import { Textos } from './components/Textos';
 import { Experiencias } from './components/Experiencias';
+import { Alojamiento } from './components/Alojamiento';
 
 /** Pantallas que editan un JSON de src/content/datos/ (ruta → componente). */
 const DOCUMENTOS = {
 	'/reconocimientos': Reconocimientos,
+	'/alojamiento': Alojamiento,
 	'/experiencias': Experiencias,
 	'/gastronomia': Gastronomia,
 	'/textos': Textos,

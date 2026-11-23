@@ -1,0 +1,166 @@
+{
+	"cabanas": {
+		"descripcion": {
+			"es": "Dos cabañas tipo A, cada una para 5 personas, con balcón de madera y rodeadas de naturaleza.",
+			"en": "Two A-frame cabins, each for 5 guests, with a wooden balcony and surrounded by nature."
+		},
+		"tarifa": "120",
+		"notaTarifa": {
+			"es": "por 24 h · tarifa referencial",
+			"en": "per 24 h · reference rate"
+		},
+		"caracteristicas": [
+			{
+				"clave": {
+					"es": "Capacidad",
+					"en": "Capacity"
+				},
+				"valor": {
+					"es": "5 personas",
+					"en": "5 guests"
+				}
+			},
+			{
+				"clave": {
+					"es": "Camas",
+					"en": "Beds"
+				},
+				"valor": {
+					"es": "4 camas",
+					"en": "4 beds"
+				}
+			},
+			{
+				"clave": {
+					"es": "Cocina",
+					"en": "Kitchen"
+				},
+				"valor": {
+					"es": "Con refrigeradora",
+					"en": "With fridge"
+				}
+			},
+			{
+				"clave": {
+					"es": "Baño",
+					"en": "Bathroom"
+				},
+				"valor": {
+					"es": "Privado",
+					"en": "Private"
+				}
+			},
+			{
+				"clave": {
+					"es": "Unidades",
+					"en": "Units"
+				},
+				"valor": {
+					"es": "2 cabañas tipo A",
+					"en": "2 A-frame cabins"
+				}
+			},
+			{
+				"clave": {
+					"es": "Acceso Amaris",
+					"en": "Amaris access"
+				},
+				"valor": {
+					"es": "Sedán y microbús",
+					"en": "Sedan and minibus"
+				}
+			}
+		],
+		"fotos": [
+			{
+				"foto": "img/noche-cabana-2.jpg",
+				"alt": {
+					"es": "Cabaña alpina tipo A iluminada de noche, con balcón de madera",
+					"en": "A-frame alpine cabin lit at night, with a wooden balcony"
+				}
+			},
+			{
+				"foto": "img/dia-cabanas-2.jpg",
+				"alt": {
+					"es": "Las dos cabañas alpinas frente a un jardín amplio",
+					"en": "The two alpine cabins facing a wide garden"
+				}
+			},
+			{
+				"foto": "img/pan-cabana.jpg",
+				"alt": {
+					"es": "Pan dulce artesanal con una cabaña alpina al fondo",
+					"en": "Homemade sweet bread with an alpine cabin in the background"
+				}
+			}
+		]
+	},
+	"hermano": {
+		"unidades": [
+			{
+				"nombre": {
+					"es": "4 habitaciones dobles",
+					"en": "4 double rooms"
+				},
+				"descripcion": {
+					"es": "Para dos personas cada una, con baño privado.",
+					"en": "For two guests each, with a private bath."
+				}
+			},
+			{
+				"nombre": {
+					"es": "Cabaña familiar",
+					"en": "Family cabin"
+				},
+				"descripcion": {
+					"es": "4 habitaciones y 10 camas.",
+					"en": "4 rooms and 10 beds."
+				}
+			}
+		],
+		"tarifas": {
+			"es": "Tarifas por consulta en WhatsApp.",
+			"en": "Rates on request via WhatsApp."
+		},
+		"foto": "",
+		"alt": {
+			"es": "",
+			"en": ""
+		}
+	},
+	"antes": [
+		{
+			"titulo": {
+				"es": "Acceso",
+				"en": "Access"
+			},
+			"texto": {
+				"es": "Algunos tramos requieren 4x4 según la unidad. Amaris tiene acceso para sedán y microbús.",
+				"en": "Some stretches require 4x4 depending on the unit. Amaris has access for sedans and minibuses."
+			},
+			"enlace": ""
+		},
+		{
+			"titulo": {
+				"es": "Horario de atención",
+				"en": "Office hours"
+			},
+			"texto": {
+				"es": "De 7 a.m. a 7 p.m.",
+				"en": "7 a.m. to 7 p.m."
+			},
+			"enlace": ""
+		},
+		{
+			"titulo": {
+				"es": "Comidas",
+				"en": "Meals"
+			},
+			"texto": {
+				"es": "Desayunos y platos típicos con reservación.",
+				"en": "Breakfasts and traditional dishes by reservation."
+			},
+			"enlace": "gastronomia"
+		}
+	]
+}

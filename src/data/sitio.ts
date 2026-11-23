@@ -4,6 +4,7 @@
  */
 import type { Lang } from '../i18n/ui';
 import sitioJson from '../content/datos/sitio.json';
+import alojamientoJson from '../content/datos/alojamiento.json';
 
 export interface Sitio {
 	aviso: { activo: boolean; tono: 'info' | 'alerta'; texto: { es: string; en: string } };
@@ -26,3 +27,6 @@ export function tituloPortada(lang: Lang): [string, string] {
 	const i = t.indexOf(',');
 	return i < 0 ? [t, ''] : [t.slice(0, i + 1), t.slice(i + 1).trim()];
 }
+
+/** Tarifa referencial de una cabaña alpina en dólares, de src/content/datos/alojamiento.json. */
+export const tarifaCabana = `$${alojamientoJson.cabanas.tarifa}`;

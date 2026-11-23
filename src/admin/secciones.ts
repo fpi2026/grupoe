@@ -19,6 +19,14 @@ export const SECCIONES: Seccion[] = [
 	{ id: 'tablero', ruta: '/', texto: 'Tablero' },
 	{ id: 'noticias', ruta: '/noticias', texto: 'Noticias' },
 	{
+		id: 'alojamiento',
+		ruta: '/alojamiento',
+		texto: 'Alojamiento',
+		archivo: 'alojamiento.json',
+		enCommit: 'el alojamiento',
+		resumen: (d) => `Cabañas Alpinas y hospedaje hermano${d.hermano.foto ? '' : ' · foto del hospedaje hermano pendiente'}`,
+	},
+	{
 		id: 'experiencias',
 		ruta: '/experiencias',
 		texto: 'Experiencias',

@@ -4,6 +4,7 @@
  * arman un mensaje que se abre en wa.me. No guarda ni envía datos a otro lado.
  */
 import { contact, type Lang } from '../i18n/ui';
+import { tarifaCabana } from '../data/sitio';
 
 interface Props {
 	lang: Lang;
@@ -36,7 +37,7 @@ const text = {
 		maxCap: 'Capacidad máxima:',
 		preview: 'Vista previa del mensaje',
 		submit: 'Abrir WhatsApp con mi solicitud',
-		note: `Tarifa referencial de cabaña alpina: $120 por 24 h. Confirmamos disponibilidad y precio por WhatsApp (${contact.whatsappDisplay}).`,
+		note: `Tarifa referencial de cabaña alpina: ${tarifaCabana} por 24 h. Confirmamos disponibilidad y precio por WhatsApp (${contact.whatsappDisplay}).`,
 		hello: 'Hola, quiero reservar en Cabañas Alpinas El Limo.',
 		mUnit: 'Unidad',
 		mIn: 'Llegada',
@@ -60,7 +61,7 @@ const text = {
 		maxCap: 'Max capacity:',
 		preview: 'Message preview',
 		submit: 'Open WhatsApp with my request',
-		note: `Reference rate for an alpine cabin: $120 per 24 h. We confirm availability and price on WhatsApp (${contact.whatsappDisplay}).`,
+		note: `Reference rate for an alpine cabin: ${tarifaCabana} per 24 h. We confirm availability and price on WhatsApp (${contact.whatsappDisplay}).`,
 		hello: "Hello, I'd like to book at Cabañas Alpinas El Limo.",
 		mUnit: 'Unit',
 		mIn: 'Check-in',

@@ -4,7 +4,7 @@
  * (carpeta del proyecto). No se agregan cifras ni datos que no estén ahí.
  */
 import type { Lang } from '../i18n/ui';
-import { enIdioma, horario, sitio, tituloPortada } from './sitio';
+import { enIdioma, horario, sitio, tarifaCabana, tituloPortada } from './sitio';
 
 export interface HomeContent {
 	meta: { title: string; description: string };
@@ -173,7 +173,7 @@ export const inicio: Record<Lang, HomeContent> = {
 					eyebrow: '2 cabañas tipo A',
 					name: 'Cabañas Alpinas',
 					text: 'Para 5 personas · 4 camas · cocina · refrigeradora · baño privado. Amaris con acceso para sedán y microbús.',
-					rate: 'Tarifa referencial: $120 por 24 h',
+					rate: `Tarifa referencial: ${tarifaCabana} por 24 h`,
 					alt: 'Fachada de la cabaña alpina tipo A con balcón de madera, iluminada de noche',
 				},
 				{
@@ -312,7 +312,7 @@ export const inicio: Record<Lang, HomeContent> = {
 					eyebrow: '2 A-frame cabins',
 					name: 'Cabañas Alpinas',
 					text: 'For 5 guests · 4 beds · kitchen · fridge · private bath. Amaris with access for sedans and minibuses.',
-					rate: 'Reference rate: $120 per 24 h',
+					rate: `Reference rate: ${tarifaCabana} per 24 h`,
 					alt: 'Front of the A-frame alpine cabin with a wooden balcony, lit at night',
 				},
 				{

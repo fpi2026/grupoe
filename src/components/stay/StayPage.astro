@@ -3,10 +3,8 @@
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BookingWhatsApp from '../BookingWhatsApp.astro';
-import nocheCabana from '../../assets/img/noche-cabana-2.jpg';
-import diaCabanas from '../../assets/img/dia-cabanas-2.jpg';
-import panCabana from '../../assets/img/pan-cabana.jpg';
 import { alojamiento } from '../../data/alojamiento';
+import { alojamientoSitio as a, en, foto } from '../../data/editable';
 import type { Lang } from '../../i18n/ui';
 import { localizedPath } from '../../i18n/utils';
 
@@ -31,23 +29,29 @@ const h2 = 'm-0 font-serif text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-nor
 
 	<section aria-labelledby="ca-t" class="container-site pb-[clamp(64px,8vw,120px)]">
 		<div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-3">
-			<Image
-				src={nocheCabana}
-				alt={c.cabins.photos[0]!}
-				widths={[480, 720, 960]}
-				sizes="(min-width: 900px) 33vw, 100vw"
-				loading="eager"
-				class="row-span-2 size-full min-h-[340px] rounded-lg object-cover"
-			/>
-			<Image src={diaCabanas} alt={c.cabins.photos[1]!} widths={[480, 720, 960]} sizes="(min-width: 900px) 33vw, 100vw" class="aspect-[4/3] w-full rounded-lg object-cover" />
-			<Image src={panCabana} alt={c.cabins.photos[2]!} widths={[480, 720, 960]} sizes="(min-width: 900px) 33vw, 100vw" class="aspect-[4/3] w-full rounded-lg object-cover" />
+			{
+				a.cabanas.fotos.map((f, i) =>
+					i === 0 ? (
+						<Image
+							src={foto(f.foto)}
+							alt={en(f.alt, lang)}
+							widths={[480, 720, 960]}
+							sizes="(min-width: 900px) 33vw, 100vw"
+							loading="eager"
+							class="row-span-2 size-full min-h-[340px] rounded-lg object-cover"
+						/>
+					) : (
+						<Image src={foto(f.foto)} alt={en(f.alt, lang)} widths={[480, 720, 960]} sizes="(min-width: 900px) 33vw, 100vw" class="aspect-[4/3] w-full rounded-lg object-cover" />
+					),
+				)
+			}
 		</div>
 		<div class="mt-[clamp(32px,4vw,56px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-x-16 gap-y-8">
 			<div class="flex flex-col gap-3">
 				<h2 id="ca-t" class={h2}>{c.cabins.title}</h2>
-				<p class="m-0 max-w-[480px] text-muted">{c.cabins.text}</p>
+				<p class="m-0 max-w-[480px] text-muted">{en(a.cabanas.descripcion, lang)}</p>
 				<p class="mt-2 mb-0 font-serif text-[30px]">
-					{c.cabins.rate} <span class="font-sans text-[15px] text-muted">{c.cabins.rateNote}</span>
+					${a.cabanas.tarifa} <span class="font-sans text-[15px] text-muted">{en(a.cabanas.notaTarifa, lang)}</span>
 				</p>
 				<a
 					href="#reserva"
@@ -58,10 +62,10 @@ const h2 = 'm-0 font-serif text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-nor
 			</div>
 			<dl class="m-0 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-x-8">
 				{
-					c.cabins.specs.map((s) => (
+					a.cabanas.caracteristicas.map((s) => (
 						<div class="border-t border-line pt-3.5 pb-[18px]">
-							<dt class="text-[13px] text-muted">{s.k}</dt>
-							<dd class="mt-1 mb-0 text-lg font-medium">{s.v}</dd>
+							<dt class="text-[13px] text-muted">{en(s.clave, lang)}</dt>
+							<dd class="mt-1 mb-0 text-lg font-medium">{en(s.valor, lang)}</dd>
 						</div>
 					))
 				}
@@ -71,23 +75,35 @@ const h2 = 'm-0 font-serif text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-nor
 
 	<section aria-labelledby="hh-t" class="bg-surface transition-[background] duration-[.6s]">
 		<div class="container-site grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-center gap-[clamp(32px,5vw,72px)] py-[clamp(64px,8vw,120px)]">
-			<div class="flex aspect-[4/3] items-center justify-center rounded-lg border border-dashed border-line bg-bg p-6 text-center text-sm text-muted">
-				{c.lodge.photoPending}
-			</div>
+			{
+				a.hermano.foto ? (
+					<Image
+						src={foto(a.hermano.foto)}
+						alt={en(a.hermano.alt, lang)}
+						widths={[480, 720, 960, 1280]}
+						sizes="(min-width: 960px) 600px, 100vw"
+						class="aspect-[4/3] w-full rounded-lg object-cover"
+					/>
+				) : (
+					<div class="flex aspect-[4/3] items-center justify-center rounded-lg border border-dashed border-line bg-bg p-6 text-center text-sm text-muted">
+						{c.lodge.photoPending}
+					</div>
+				)
+			}
 			<div class="flex flex-col gap-4">
 				<span class="eyebrow text-amber-ink">{c.lodge.eyebrow}</span>
 				<h2 id="hh-t" class={h2}>{c.lodge.title}</h2>
 				<div class="mt-2 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
 					{
-						c.lodge.units.map((u) => (
+						a.hermano.unidades.map((u) => (
 							<div class="border-t-2 border-ink pt-3.5">
-								<h3 class="m-0 font-serif text-[26px] font-normal">{u.name}</h3>
-								<p class="mt-1 mb-0 text-muted">{u.text}</p>
+								<h3 class="m-0 font-serif text-[26px] font-normal">{en(u.nombre, lang)}</h3>
+								{en(u.descripcion, lang) && <p class="mt-1 mb-0 text-muted">{en(u.descripcion, lang)}</p>}
 							</div>
 						))
 					}
 				</div>
-				<p class="mt-2 mb-0 text-muted">{c.lodge.rates}</p>
+				{en(a.hermano.tarifas, lang) && <p class="mt-2 mb-0 text-muted">{en(a.hermano.tarifas, lang)}</p>}
 			</div>
 		</div>
 	</section>
@@ -96,14 +112,14 @@ const h2 = 'm-0 font-serif text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-nor
 		<h2 id="ac-t" class="mt-0 mb-7 font-serif text-[clamp(30px,3.4vw,46px)] font-normal">{c.before.title}</h2>
 		<ul class="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-10 p-0">
 			{
-				c.before.items.map((it) => (
+				a.antes.map((it) => (
 					<li class="border-t border-line py-[18px]">
-						<strong class="mb-1 block">{it.title}</strong>
-						<span class="text-muted">{it.text}</span>
-						{it.link && (
+						<strong class="mb-1 block">{en(it.titulo, lang)}</strong>
+						<span class="text-muted">{en(it.texto, lang)}</span>
+						{it.enlace && (
 							<>
 								{' '}
-								<a href={localizedPath('gastronomia', lang)}>{it.link}</a>
+								<a href={localizedPath(it.enlace, lang)}>{c.before.links[it.enlace]}</a>
 							</>
 						)}
 					</li>

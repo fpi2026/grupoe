@@ -1,9 +1,8 @@
 /** Gastronomía (diseno/Panel-Gastronomia.dc.html): nota, platillos y fotos de src/content/datos/menu.json. */
 import { useState } from 'preact/hooks';
-import { conClave, rutaFotoNueva, useDocumento, type EstadoDocumento } from '../lib/documento';
+import { conClave, useDocumento } from '../lib/documento';
 import type { Repo } from '../lib/noticias';
-import { Asa, CampoBilingue, ConfirmarBorrado, PantallaDocumento, mover, useFotoDocumento, useOrdenable, type Bilingue } from './formulario';
-import { SelectorFoto } from './SelectorFoto';
+import { Asa, CampoBilingue, ConfirmarBorrado, ListaFotos, PantallaDocumento, useOrdenable, type Bilingue } from './formulario';
 import { Boton } from './ui';
 
 interface Platillo {
@@ -29,7 +28,6 @@ export function Gastronomia({ repo, onGuardado }: { repo: Repo | null; onGuardad
 	const doc = useDocumento<Menu>('menu.json', repo, (d) => ({ ...d, platillos: d.platillos.map(conClave), fotos: d.fotos.map(conClave) }));
 	const [abierto, setAbierto] = useState<string | null>(null);
 	const [borrando, setBorrando] = useState<string | null>(null);
-	const [nuevaFoto, setNuevaFoto] = useState(false);
 
 	const m = doc.datos;
 	const set = (cambio: Partial<Menu>) => doc.setDatos((d) => ({ ...d, ...cambio }));
@@ -146,98 +144,11 @@ export function Gastronomia({ repo, onGuardado }: { repo: Repo | null; onGuardad
 								</h2>
 								<span class="text-sm text-muted">Se muestran debajo del menú, en este orden.</span>
 							</div>
-							<ol class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4 p-0">
-								{m.fotos.map((f, i) => (
-									<TarjetaFoto
-										key={f._k}
-										f={f}
-										i={i}
-										total={m.fotos.length}
-										doc={doc}
-										repo={repo!}
-										error={error(`${f._k}.alt`)}
-										onCambio={(c) => setFotos((a) => a.map((y) => (y._k === f._k ? { ...y, ...c } : y)))}
-										onMover={(j) => setFotos((a) => mover(a, i, j))}
-										onQuitar={() => setFotos((a) => a.filter((y) => y._k !== f._k))}
-									/>
-								))}
-							</ol>
-							{nuevaFoto ? (
-								<div class="max-w-[320px] rounded-sm border border-line bg-card p-4">
-									<SelectorFoto
-										id="nueva-foto"
-										etiqueta="Nueva foto"
-										src={null}
-										insigniaPendiente="Elige una foto"
-										textoPendiente="Elige una foto horizontal. Después escribe su descripción."
-										onFoto={(x) => {
-											const ruta = rutaFotoNueva('gastronomia');
-											doc.agregarFoto(ruta, x.blob, x.url);
-											setFotos((a) => [...a, conClave({ foto: ruta, alt: vacio() })]);
-											setNuevaFoto(false);
-										}}
-									/>
-								</div>
-							) : (
-								<Boton variante="contorno" class="self-start" onClick={() => setNuevaFoto(true)}>
-									+ Agregar foto
-								</Boton>
-							)}
+							<ListaFotos fotos={m.fotos} onCambio={(a) => setFotos(() => a)} prefijo="gastronomia" doc={doc} repo={repo!} error={error} />
 						</section>
 					</>
 				)
 			}
 		</PantallaDocumento>
-	);
-}
-
-function TarjetaFoto(p: {
-	f: Foto;
-	i: number;
-	total: number;
-	doc: EstadoDocumento<Menu>;
-	repo: Repo;
-	error?: string;
-	onCambio: (c: Partial<Foto>) => void;
-	onMover: (j: number) => void;
-	onQuitar: () => void;
-}) {
-	const src = useFotoDocumento(p.f.foto, p.doc, p.repo);
-	const [quitando, setQuitando] = useState(false);
-	const nombre = p.f.alt.es || `foto ${p.i + 1}`;
-	return (
-		<li class="flex flex-col gap-3 rounded-md border border-line bg-card p-3">
-			<div class="relative aspect-[4/3] overflow-hidden rounded-sm bg-skel">
-				{src && <img src={src} alt={p.f.alt.es} class="size-full object-cover" />}
-				<span class="absolute top-2 left-2 rounded-pill bg-ink px-2 py-0.5 text-xs font-bold text-bg">{p.i + 1}</span>
-			</div>
-			<CampoBilingue etiqueta="Descripción de la foto" requerido multilinea filas={3} pestanas valor={p.f.alt} onCambio={(v) => p.onCambio({ alt: v })} error={p.error} />
-			<div class="flex flex-wrap items-center gap-1.5">
-				<button
-					type="button"
-					onClick={() => p.onMover(p.i - 1)}
-					disabled={p.i === 0}
-					aria-label={`Mover «${nombre}» a la izquierda`}
-					class="size-11 cursor-pointer rounded-sm border border-line bg-transparent text-ink disabled:cursor-default disabled:opacity-35"
-				>
-					←
-				</button>
-				<button
-					type="button"
-					onClick={() => p.onMover(p.i + 1)}
-					disabled={p.i === p.total - 1}
-					aria-label={`Mover «${nombre}» a la derecha`}
-					class="size-11 cursor-pointer rounded-sm border border-line bg-transparent text-ink disabled:cursor-default disabled:opacity-35"
-				>
-					→
-				</button>
-				<Boton variante="texto-peligro" class="ml-auto" onClick={() => setQuitando(true)}>
-					Quitar
-				</Boton>
-			</div>
-			{quitando && (
-				<ConfirmarBorrado pregunta="¿Quitar esta foto?" texto="Dejará de aparecer en la página cuando guardes." onNo={() => setQuitando(false)} onSi={p.onQuitar} />
-			)}
-		</li>
 	);
 }

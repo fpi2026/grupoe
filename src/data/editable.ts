@@ -13,6 +13,7 @@ import reconocimientosJson from '../content/datos/reconocimientos.json';
 import menuJson from '../content/datos/menu.json';
 import sitioJson from '../content/datos/sitio.json';
 import experienciasJson from '../content/datos/experiencias.json';
+import alojamientoJson from '../content/datos/alojamiento.json';
 
 // ---------- Fotos ----------
 
@@ -104,3 +105,39 @@ const experiencia = z
 	.refine((x) => !x.foto || x.alt.es.trim(), 'Una experiencia con foto necesita su descripción en español');
 
 export const experienciasSitio = validar(z.object({ aviso: bilingue, items: z.array(experiencia) }), experienciasJson, 'experiencias.json');
+
+// ---------- Alojamiento ----------
+
+const fotoConAlt = z.object({ foto: rutaFoto.refine((r) => r !== '', 'Falta la foto'), alt: bilingueObligatorio });
+
+export const alojamientoSitio = validar(
+	z.object({
+		cabanas: z.object({
+			descripcion: bilingueObligatorio,
+			/** Dólares, solo la cifra: «120». */
+			tarifa: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Tarifa en dólares, solo la cifra'),
+			notaTarifa: bilingue,
+			caracteristicas: z.array(z.object({ clave: bilingueObligatorio, valor: bilingueObligatorio })),
+			/** La primera es la principal. */
+			fotos: z.array(fotoConAlt).min(1),
+		}),
+		hermano: z
+			.object({
+				unidades: z.array(z.object({ nombre: bilingueObligatorio, descripcion: bilingue })),
+				tarifas: bilingue,
+				/** Vacía = «Foto pendiente». */
+				foto: rutaFoto,
+				alt: bilingue,
+			})
+			.refine((h) => !h.foto || h.alt.es.trim(), 'La foto del hospedaje hermano necesita su descripción en español'),
+		antes: z.array(
+			z.object({
+				titulo: bilingueObligatorio,
+				texto: bilingue,
+				enlace: z.enum(['', 'gastronomia', 'experiencias', 'contacto', 'sostenibilidad']),
+			}),
+		),
+	}),
+	alojamientoJson,
+	'alojamiento.json',
+);

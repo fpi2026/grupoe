@@ -5,7 +5,7 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { esDemo } from '../lib/demo';
-import { rutaFotoNueva, rutaFotoRepo, type EstadoDocumento } from '../lib/documento';
+import { conClave, rutaFotoNueva, rutaFotoRepo, type EstadoDocumento } from '../lib/documento';
 import type { Repo } from '../lib/noticias';
 import { protegerSalida } from '../lib/salida';
 import { BarraGuardar } from './BarraGuardar';
@@ -395,5 +395,118 @@ export function PantallaDocumento({ titulo, intro, accion, doc, errores, mensaje
 				/>
 			)}
 		</>
+	);
+}
+
+// ---------- Lista de fotos con descripción ----------
+
+export interface FotoConAlt {
+	_k: string;
+	foto: string;
+	alt: Bilingue;
+}
+
+/** Fotos ordenables (← →) con su descripción ES/EN, para quitar y agregar. Errores en «<_k>.alt». */
+export function ListaFotos({
+	fotos,
+	onCambio,
+	prefijo,
+	doc,
+	repo,
+	error,
+	minimo = 0,
+}: {
+	fotos: FotoConAlt[];
+	onCambio: (f: FotoConAlt[]) => void;
+	prefijo: string;
+	doc: EstadoDocumento<any>;
+	repo: Repo;
+	error: (campo: string) => string | undefined;
+	/** Fotos que deben quedar como mínimo (no se pueden quitar más). */
+	minimo?: number;
+}) {
+	const [nueva, setNueva] = useState(false);
+	return (
+		<>
+			<ol class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4 p-0">
+				{fotos.map((f, i) => (
+					<TarjetaFoto
+						key={f._k}
+						f={f}
+						i={i}
+						total={fotos.length}
+						doc={doc}
+						repo={repo}
+						error={error(`${f._k}.alt`)}
+						quitable={fotos.length > minimo}
+						onCambio={(c) => onCambio(fotos.map((y) => (y._k === f._k ? { ...y, ...c } : y)))}
+						onMover={(j) => onCambio(mover(fotos, i, j))}
+						onQuitar={() => onCambio(fotos.filter((y) => y._k !== f._k))}
+					/>
+				))}
+			</ol>
+			{nueva ? (
+				<div class="max-w-[320px] rounded-sm border border-line bg-card p-4">
+					<SelectorFoto
+						id={`nueva-${prefijo}`}
+						etiqueta="Nueva foto"
+						src={null}
+						insigniaPendiente="Elige una foto"
+						textoPendiente="Elige una foto horizontal. Después escribe su descripción."
+						onFoto={(x) => {
+							const ruta = rutaFotoNueva(prefijo);
+							doc.agregarFoto(ruta, x.blob, x.url);
+							onCambio([...fotos, conClave({ foto: ruta, alt: { es: '', en: '' } })]);
+							setNueva(false);
+						}}
+					/>
+				</div>
+			) : (
+				<Boton variante="contorno" class="self-start" onClick={() => setNueva(true)}>
+					+ Agregar foto
+				</Boton>
+			)}
+		</>
+	);
+}
+
+function TarjetaFoto(p: {
+	f: FotoConAlt;
+	i: number;
+	total: number;
+	doc: EstadoDocumento<any>;
+	repo: Repo;
+	error?: string;
+	quitable: boolean;
+	onCambio: (c: Partial<FotoConAlt>) => void;
+	onMover: (j: number) => void;
+	onQuitar: () => void;
+}) {
+	const src = useFotoDocumento(p.f.foto, p.doc, p.repo);
+	const [quitando, setQuitando] = useState(false);
+	const nombre = p.f.alt.es || `foto ${p.i + 1}`;
+	const flecha = 'size-11 cursor-pointer rounded-sm border border-line bg-transparent text-ink disabled:cursor-default disabled:opacity-35';
+	return (
+		<li class="flex flex-col gap-3 rounded-md border border-line bg-card p-3">
+			<div class="relative aspect-[4/3] overflow-hidden rounded-sm bg-skel">
+				{src && <img src={src} alt={p.f.alt.es} class="size-full object-cover" />}
+				<span class="absolute top-2 left-2 rounded-pill bg-ink px-2 py-0.5 text-xs font-bold text-bg">{p.i + 1}</span>
+			</div>
+			<CampoBilingue etiqueta="Descripción de la foto" requerido multilinea filas={3} pestanas valor={p.f.alt} onCambio={(v) => p.onCambio({ alt: v })} error={p.error} />
+			<div class="flex flex-wrap items-center gap-1.5">
+				<button type="button" onClick={() => p.onMover(p.i - 1)} disabled={p.i === 0} aria-label={`Mover «${nombre}» antes`} class={flecha}>
+					←
+				</button>
+				<button type="button" onClick={() => p.onMover(p.i + 1)} disabled={p.i === p.total - 1} aria-label={`Mover «${nombre}» después`} class={flecha}>
+					→
+				</button>
+				{p.quitable && (
+					<Boton variante="texto-peligro" class="ml-auto" onClick={() => setQuitando(true)}>
+						Quitar
+					</Boton>
+				)}
+			</div>
+			{quitando && <ConfirmarBorrado pregunta="¿Quitar esta foto?" texto="Dejará de aparecer en la página cuando guardes." onNo={() => setQuitando(false)} onSi={p.onQuitar} />}
+		</li>
 	);
 }
