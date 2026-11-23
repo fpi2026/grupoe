@@ -34,6 +34,14 @@ export const SECCIONES: Seccion[] = [
 		enCommit: 'los reconocimientos',
 		resumen: (d) => (d.items.length === 1 ? '1 reconocimiento' : `${d.items.length} reconocimientos`),
 	},
+	{
+		id: 'textos',
+		ruta: '/textos',
+		texto: 'Textos y avisos',
+		archivo: 'sitio.json',
+		enCommit: 'los textos y avisos del sitio',
+		resumen: (d) => `Aviso temporal: ${d.aviso.activo ? 'activo' : 'inactivo'}`,
+	},
 ];
 
 export const seccionActiva = (s: Seccion, ruta: string) => (s.ruta === '/' ? ruta === '/' : ruta === s.ruta || ruta.startsWith(`${s.ruta}/`));

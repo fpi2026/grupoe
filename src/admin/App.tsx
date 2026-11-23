@@ -11,11 +11,13 @@ import { ListaNoticias } from './components/ListaNoticias';
 import { EditorNoticia } from './components/EditorNoticia';
 import { Reconocimientos } from './components/Reconocimientos';
 import { Gastronomia } from './components/Gastronomia';
+import { Textos } from './components/Textos';
 
 /** Pantallas que editan un JSON de src/content/datos/ (ruta → componente). */
 const DOCUMENTOS = {
 	'/reconocimientos': Reconocimientos,
 	'/gastronomia': Gastronomia,
+	'/textos': Textos,
 } as const;
 import { Aviso, Cargando, avisar, claseBoton, contenedor } from './components/ui';
 import { clearToken, getToken, mensajeDeError, verificarToken, type Permisos } from './lib/github';

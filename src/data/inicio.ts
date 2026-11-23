@@ -4,6 +4,7 @@
  * (carpeta del proyecto). No se agregan cifras ni datos que no estén ahí.
  */
 import type { Lang } from '../i18n/ui';
+import { enIdioma, horario, sitio, tituloPortada } from './sitio';
 
 export interface HomeContent {
 	meta: { title: string; description: string };
@@ -80,10 +81,10 @@ export const inicio: Record<Lang, HomeContent> = {
 				'Cabañas tipo A rodeadas de bosque nebuloso en El Limo, Metapán, en la zona de amortiguamiento de la Reserva de la Biosfera Trifinio Fraternidad.',
 		},
 		hero: {
-			eyebrow: 'Reserva de la Biosfera Trifinio Fraternidad · El Limo, Metapán',
-			titleA: 'Despierta en las montañas,',
-			titleB: 'vive la serenidad.',
-			lead: 'Cabañas tipo A rodeadas de bosque nebuloso, en la primera reserva trinacional de América. Niebla, madera, silencio y café de mañana.',
+			eyebrow: enIdioma(sitio.portada.antetitulo, 'es'),
+			titleA: tituloPortada('es')[0],
+			titleB: tituloPortada('es')[1],
+			lead: enIdioma(sitio.portada.texto, 'es'),
 			book: 'Reservar por WhatsApp',
 			cabins: 'Ver las cabañas',
 			dayNight: 'Día o noche',
@@ -198,7 +199,7 @@ export const inicio: Record<Lang, HomeContent> = {
 			titleA: 'Te esperamos',
 			titleB: 'entre la niebla',
 			hours: 'Horario',
-			hoursValue: '7 a.m. a 7 p.m.',
+			hoursValue: horario('es'),
 			from: 'Desde San Salvador',
 			fromValue: '~3 h 30 min',
 			location: 'Ubicación',
@@ -219,10 +220,10 @@ export const inicio: Record<Lang, HomeContent> = {
 				'A-frame cabins wrapped in cloud forest in El Limo, Metapán, in the buffer zone of the Trifinio Fraternidad Biosphere Reserve.',
 		},
 		hero: {
-			eyebrow: 'Trifinio Fraternidad Biosphere Reserve · El Limo, Metapán',
-			titleA: 'Wake up in the mountains,',
-			titleB: 'live the serenity.',
-			lead: "A-frame cabins wrapped in cloud forest, in the Americas' first tri-national reserve. Mist, wood, silence and morning coffee.",
+			eyebrow: enIdioma(sitio.portada.antetitulo, 'en'),
+			titleA: tituloPortada('en')[0],
+			titleB: tituloPortada('en')[1],
+			lead: enIdioma(sitio.portada.texto, 'en'),
 			book: 'Book on WhatsApp',
 			cabins: 'See the cabins',
 			dayNight: 'Day or night',
@@ -337,7 +338,7 @@ export const inicio: Record<Lang, HomeContent> = {
 			titleA: "We'll be waiting",
 			titleB: 'in the mist',
 			hours: 'Hours',
-			hoursValue: '7 a.m. to 7 p.m.',
+			hoursValue: horario('en'),
 			from: 'From San Salvador',
 			fromValue: '~3 h 30 min',
 			location: 'Location',

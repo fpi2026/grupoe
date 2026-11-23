@@ -11,6 +11,7 @@ import { z } from 'astro/zod';
 import type { Lang } from '../i18n/ui';
 import reconocimientosJson from '../content/datos/reconocimientos.json';
 import menuJson from '../content/datos/menu.json';
+import sitioJson from '../content/datos/sitio.json';
 
 // ---------- Fotos ----------
 
@@ -67,3 +68,21 @@ const menu = z.object({
 });
 
 export const menuGastronomia = validar(menu, menuJson, 'menu.json');
+
+// ---------- Textos y avisos del sitio ----------
+// Los usan src/data/sitio.ts (sin validar, para i18n/ui.ts); aquí se validan al compilar.
+
+validar(
+	z.object({
+		aviso: z.object({ activo: z.boolean(), tono: z.enum(['info', 'alerta']), texto: bilingue }).refine((a) => !a.activo || a.texto.es.trim(), 'Un aviso activo necesita texto en español'),
+		contacto: z.object({
+			whatsapp: z.string().regex(/^\+\d[\d\s-]{6,}$/, 'WhatsApp con código de país, por ejemplo +503 7568-3400'),
+			correo: z.union([z.literal(''), z.email()]),
+			horario: bilingueObligatorio,
+		}),
+		lema: bilingue,
+		portada: z.object({ antetitulo: bilingue, titulo: bilingueObligatorio, texto: bilingue }),
+	}),
+	sitioJson,
+	'sitio.json',
+);

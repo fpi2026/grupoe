@@ -27,6 +27,7 @@ const heading = 'text-xs font-bold tracking-[.14em] uppercase text-muted';
 		<div class="flex flex-col gap-2 text-[15px]">
 			<strong class={heading}>{t('footer.contact')}</strong>
 			<a href={whatsappUrl()} target="_blank" rel="noopener">WhatsApp {contact.whatsappDisplay}</a>
+			{contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
 			<span>{t('footer.hours')}</span>
 			<a href={localizedPath('contacto', lang)}>{t('nav.contacto')}</a>
 		</div>

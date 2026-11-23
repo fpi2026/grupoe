@@ -1,0 +1,36 @@
+{
+	"aviso": {
+		"activo": false,
+		"tono": "info",
+		"texto": {
+			"es": "",
+			"en": ""
+		}
+	},
+	"contacto": {
+		"whatsapp": "+503 7568-3400",
+		"correo": "",
+		"horario": {
+			"es": "7 a.m. a 7 p.m.",
+			"en": "7 a.m. to 7 p.m."
+		}
+	},
+	"lema": {
+		"es": "hospedaje · alimentación · bienestar",
+		"en": "hospedaje · alimentación · bienestar"
+	},
+	"portada": {
+		"antetitulo": {
+			"es": "Reserva de la Biosfera Trifinio Fraternidad · El Limo, Metapán",
+			"en": "Trifinio Fraternidad Biosphere Reserve · El Limo, Metapán"
+		},
+		"titulo": {
+			"es": "Despierta en las montañas, vive la serenidad.",
+			"en": "Wake up in the mountains, live the serenity."
+		},
+		"texto": {
+			"es": "Cabañas tipo A rodeadas de bosque nebuloso, en la primera reserva trinacional de América. Niebla, madera, silencio y café de mañana.",
+			"en": "A-frame cabins wrapped in cloud forest, in the Americas' first tri-national reserve. Mist, wood, silence and morning coffee."
+		}
+	}
+}

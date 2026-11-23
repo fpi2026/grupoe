@@ -2,6 +2,7 @@
  * Diccionario y rutas del sitio en español e inglés.
  * Los textos salen del informe institucional y del diseño; no se inventan datos.
  */
+import { enIdioma, horario, sitio } from '../data/sitio';
 
 export const languages = { es: 'Español', en: 'English' } as const;
 export type Lang = keyof typeof languages;
@@ -34,8 +35,12 @@ export const navOrder: RouteKey[] = [
 
 /** Datos de contacto (Informe institucional). */
 export const contact = {
-	whatsapp: '50375683400',
-	whatsappDisplay: '+503 7568-3400',
+	/** Solo cifras, para los enlaces wa.me (sale de src/content/datos/sitio.json). */
+	whatsapp: sitio.contacto.whatsapp.replace(/\D/g, ''),
+	/** Como se muestra: +503 7568-3400. */
+	whatsappDisplay: sitio.contacto.whatsapp,
+	/** Opcional: si está vacío no se muestra. */
+	email: sitio.contacto.correo,
 	/** Historial de la estación del hostal en AireSV (Plan del sitio). */
 	airesvHistory: 'https://airesv.esaapp.com/historial/METAPANLIMOHOSTAL',
 } as const;
@@ -43,7 +48,7 @@ export const contact = {
 export const ui = {
 	es: {
 		'site.name': 'Cabañas Alpinas El Limo',
-		'site.tagline': 'Despierta en las montañas, vive la serenidad.',
+		'site.tagline': enIdioma(sitio.portada.titulo, 'es'),
 		'site.description':
 			'Cabañas tipo A en el Cantón El Limo, Metapán, en la zona de amortiguamiento de la Reserva de la Biosfera Trifinio Fraternidad.',
 
@@ -60,7 +65,7 @@ export const ui = {
 		'header.skip': 'Saltar al contenido',
 		'header.home': 'Cabañas Alpinas El Limo, inicio',
 		'header.brand': 'CABAÑAS ALPINAS',
-		'header.brandSub': 'hospedaje · alimentación · bienestar',
+		'header.brandSub': enIdioma(sitio.lema, 'es'),
 		'header.langGroup': 'Idioma / Language',
 		'header.theme': 'Cambiar entre tema día y noche',
 		'header.themeTitle': 'Día / Noche',
@@ -74,7 +79,7 @@ export const ui = {
 		'footer.address2': 'Santa Ana Norte, El Salvador',
 		'footer.buffer': 'Zona de amortiguamiento, Reserva de la Biosfera Trifinio Fraternidad',
 		'footer.contact': 'Contacto',
-		'footer.hours': 'Atención de 7 a.m. a 7 p.m.',
+		'footer.hours': `Atención de ${horario('es')}`,
 		'footer.credentials': 'Credenciales',
 		'footer.seal': 'Sello Ambiental NTS 13.11.14:25',
 		'footer.registry': 'Registro Nacional de Turismo: en trámite',
@@ -83,7 +88,7 @@ export const ui = {
 	},
 	en: {
 		'site.name': 'Cabañas Alpinas El Limo',
-		'site.tagline': 'Wake up in the mountains, live the serenity.',
+		'site.tagline': enIdioma(sitio.portada.titulo, 'en'),
 		'site.description':
 			'A-frame cabins in Cantón El Limo, Metapán, in the buffer zone of the Trifinio Fraternidad Biosphere Reserve.',
 
@@ -100,7 +105,7 @@ export const ui = {
 		'header.skip': 'Skip to content',
 		'header.home': 'Cabañas Alpinas El Limo, home',
 		'header.brand': 'CABAÑAS ALPINAS',
-		'header.brandSub': 'hospedaje · alimentación · bienestar',
+		'header.brandSub': enIdioma(sitio.lema, 'en'),
 		'header.langGroup': 'Idioma / Language',
 		'header.theme': 'Switch between day and night theme',
 		'header.themeTitle': 'Day / Night',
@@ -114,7 +119,7 @@ export const ui = {
 		'footer.address2': 'Santa Ana Norte, El Salvador',
 		'footer.buffer': 'Buffer zone, Trifinio Fraternidad Biosphere Reserve',
 		'footer.contact': 'Contact',
-		'footer.hours': 'Open 7 a.m. to 7 p.m.',
+		'footer.hours': `Open ${horario('en')}`,
 		'footer.credentials': 'Credentials',
 		'footer.seal': 'Environmental Seal NTS 13.11.14:25',
 		'footer.registry': 'National Tourism Registry: in process',

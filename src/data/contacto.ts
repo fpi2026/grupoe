@@ -3,6 +3,10 @@
  * Fuentes: Informe institucional (secciones 7 y 12) y Plan del sitio (horario).
  */
 import type { Lang } from '../i18n/ui';
+import { horario } from './sitio';
+
+/** Termina la oración con punto si el texto no lo trae («7 p.m.» ya lo tiene). */
+const conPunto = (t: string) => (t.endsWith('.') ? t : `${t}.`);
 
 export interface ContactContent {
 	meta: { title: string; description: string };
@@ -40,7 +44,7 @@ export const contacto: Record<Lang, ContactContent> = {
 		facts: [
 			{ k: 'Dirección', v: 'Cantón El Limo, distrito de Metapán, Santa Ana Norte, El Salvador' },
 			{ k: 'Desde San Salvador', v: 'Aproximadamente 3 h 30 min, según la ruta y el estado del camino' },
-			{ k: 'Horario', v: '7 a.m. a 7 p.m.' },
+			{ k: 'Horario', v: horario('es') },
 		],
 		access:
 			'Algunas instalaciones tienen acceso para vehículos convencionales; otras experiencias del Parque Geoturístico requieren 4x4 o caminata en el último tramo. La cabaña Amaris tiene un acceso más sencillo para sedán y microbús. Te enviamos por WhatsApp las instrucciones según la unidad que reserves.',
@@ -52,7 +56,7 @@ export const contacto: Record<Lang, ContactContent> = {
 		},
 		form: {
 			title: 'Escríbenos',
-			lead: 'Para grupos, universidades o preguntas sobre la ruta. Respondemos de 7 a.m. a 7 p.m.',
+			lead: `Para grupos, universidades o preguntas sobre la ruta. Respondemos de ${conPunto(horario('es'))}`,
 			name: 'Nombre',
 			email: 'Correo (opcional)',
 			message: 'Mensaje',
@@ -76,7 +80,7 @@ export const contacto: Record<Lang, ContactContent> = {
 		facts: [
 			{ k: 'Address', v: 'Cantón El Limo, Metapán district, Santa Ana Norte, El Salvador' },
 			{ k: 'From San Salvador', v: 'About 3 h 30 min, depending on the route and road conditions' },
-			{ k: 'Hours', v: '7 a.m. to 7 p.m.' },
+			{ k: 'Hours', v: horario('en') },
 		],
 		access:
 			'Some facilities can be reached by regular car; other Geotourism Park experiences need a 4x4 or a walk on the last stretch. The Amaris cabin has easier access for sedans and minibuses. We send you directions on WhatsApp for the unit you book.',
@@ -88,7 +92,7 @@ export const contacto: Record<Lang, ContactContent> = {
 		},
 		form: {
 			title: 'Write to us',
-			lead: 'For groups, universities or route questions. We reply 7 a.m. to 7 p.m.',
+			lead: `For groups, universities or route questions. We reply ${conPunto(horario('en'))}`,
 			name: 'Name',
 			email: 'Email (optional)',
 			message: 'Message',
