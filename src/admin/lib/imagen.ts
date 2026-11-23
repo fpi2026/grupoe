@@ -5,7 +5,13 @@
 const MAX = 1600;
 const LIMITE = 400 * 1024;
 
-export async function comprimirImagen(archivo: File): Promise<Blob> {
+export interface ImagenReducida {
+	blob: Blob;
+	ancho: number;
+	alto: number;
+}
+
+export async function comprimirImagen(archivo: File): Promise<ImagenReducida> {
 	if (!archivo.type.startsWith('image/')) throw new Error('El archivo no es una imagen.');
 	const bmp = await createImageBitmap(archivo);
 	const escala = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
@@ -26,7 +32,8 @@ export async function comprimirImagen(archivo: File): Promise<Blob> {
 		blob = await aWebp(calidad);
 	}
 	if (blob.type !== 'image/webp') throw new Error('Tu navegador no puede convertir a WebP. Prueba con Chrome, Edge o Firefox.');
-	return blob;
+	return { blob, ancho: canvas.width, alto: canvas.height };
 }
 
-export const tamano = (bytes: number) => (bytes < 1024 * 1024 ? `${Math.round(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`);
+export const tamano = (bytes: number) =>
+	bytes < 1024 * 1024 ? `${Math.round(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;

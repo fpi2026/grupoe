@@ -1,10 +1,15 @@
 ---
 /**
  * Panel de contenido (CMS). Solo funciona en el navegador (client:only) y no se indexa.
- * El token de GitHub se pide al entrar; nunca va en el código.
+ * Diseño: diseno/Panel-*.dc.html y diseno/panel.css.
  */
-import '../../styles/global.css';
+import { getImage } from 'astro:assets';
+import '../../styles/panel.css';
 import App from '../../admin/App';
+import nocheCabana from '../../assets/img/noche-cabana.jpg';
+
+// Foto de la pantalla de inicio de sesión, reducida al compilar
+const fondo = await getImage({ src: nocheCabana, width: 1200, format: 'webp' });
 ---
 
 <!doctype html>
@@ -15,49 +20,17 @@ import App from '../../admin/App';
 		<meta name="robots" content="noindex, nofollow" />
 		<title>Panel · Cabañas Alpinas El Limo</title>
 		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/?$/, '/')}favicon.svg`} />
+		<script is:inline>
+			// Mismo tema que el sitio (día / noche), antes de pintar
+			try {
+				document.documentElement.dataset.theme = localStorage.getItem('cael-theme') === 'night' ? 'night' : 'day';
+			} catch (e) {}
+		</script>
 	</head>
 	<body>
-		<App client:only="preact">
+		<App client:only="preact" fondoLogin={fondo.src}>
 			<p slot="fallback" style="padding:2rem">Cargando el panel…</p>
 		</App>
 		<noscript><p style="padding:2rem">El panel necesita JavaScript.</p></noscript>
 	</body>
 </html>
-
-<style is:global>
-	/* Vista previa del texto en Markdown dentro del editor */
-	.vista-md :is(p, ul, ol, blockquote) {
-		margin: 0;
-	}
-	.vista-md :is(ul, ol) {
-		padding-left: 1.3em;
-	}
-	.vista-md ul {
-		list-style: disc;
-	}
-	.vista-md ol {
-		list-style: decimal;
-	}
-	.vista-md h2 {
-		margin: 0.6em 0 0;
-		font-family: var(--font-serif);
-		font-weight: 500;
-		font-size: clamp(26px, 2.6vw, 34px);
-		line-height: 1.15;
-	}
-	.vista-md h3 {
-		margin: 0.4em 0 0;
-		font-family: var(--font-serif);
-		font-weight: 500;
-		font-size: 24px;
-	}
-	.vista-md blockquote {
-		border-left: 3px solid var(--amber);
-		padding-left: 14px;
-		font-family: var(--font-serif);
-		font-style: italic;
-	}
-	.vista-md img {
-		max-width: 100%;
-	}
-</style>

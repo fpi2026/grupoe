@@ -1,0 +1,124 @@
+/*
+ * Estilos del panel de contenido (/admin).
+ * Fuente de verdad: diseno/panel.css y diseno/Panel-tokens.md. Todo lo demás sale de global.css.
+ */
+@import "./global.css";
+
+/* ---------- Colores de estado (día y noche) ---------- */
+:root {
+  --ok: #2d5a35;
+  --ok-bg: #dde6d5;
+  --warn: #7e4c0c;
+  --warn-bg: #f4e2c0;
+  --danger: #9a3a22;
+  --danger-bg: #f2dad0;
+  --danger-btn: #9a3a22;
+  --danger-btn-ink: #fbf3ee;
+  --info: #2f5566;
+  --info-bg: #d9e3e4;
+  --neutral: #4c564f;
+  --neutral-bg: #e2dcce;
+  --conflict: #7a4a28;
+  --conflict-bg: #eedcc8;
+  --skel: #e4ddcd;
+  /* Alto de la barra inferior en móvil (la barra de guardar se fija encima) */
+  --panel-nav-h: 0px;
+}
+
+:root[data-theme="night"] {
+  --ok: #93c08b;
+  --ok-bg: #1e3123;
+  --warn: #f0b04a;
+  --warn-bg: #382a12;
+  --danger: #ee9c82;
+  --danger-bg: #3a1e16;
+  --danger-btn: #e58a6e;
+  --danger-btn-ink: #1e0d08;
+  --info: #9cc4d4;
+  --info-bg: #182a31;
+  --neutral: #b5af9f;
+  --neutral-bg: #222c26;
+  --conflict: #d9a577;
+  --conflict-bg: #33241a;
+  --skel: #1f2b23;
+}
+
+@media (max-width: 820px) {
+  :root {
+    --panel-nav-h: 64px;
+  }
+}
+
+@theme inline {
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-btn: var(--danger-btn);
+  --color-danger-btn-ink: var(--danger-btn-ink);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-neutral: var(--neutral);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-conflict: var(--conflict);
+  --color-conflict-bg: var(--conflict-bg);
+  --color-skel: var(--skel);
+
+  --animate-pspin: pspin 0.9s linear infinite;
+  @keyframes pspin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@layer base {
+  /* El panel usa cuerpo de 16 px (el sitio, 17 px) */
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+/* Vista previa del texto en Markdown dentro del editor */
+.vista-md {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.vista-md :is(p, ul, ol, blockquote) {
+  margin: 0;
+}
+.vista-md :is(ul, ol) {
+  padding-left: 1.3em;
+}
+.vista-md ul {
+  list-style: disc;
+}
+.vista-md ol {
+  list-style: decimal;
+}
+.vista-md :is(h2, h3) {
+  margin: 8px 0 0;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.15;
+}
+.vista-md blockquote {
+  border-left: 3px solid var(--amber);
+  padding-left: 14px;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+.vista-md img {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pspin {
+    animation-duration: 3s;
+  }
+}

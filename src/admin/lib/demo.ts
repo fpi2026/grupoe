@@ -25,10 +25,17 @@ export const TOKEN_GENERAL: string | undefined = import.meta.env.PUBLIC_GH_TOKEN
 
 /** Hay una sesión abierta con el usuario compartido. */
 export const sesionCompartida = () => sessionStorage.getItem(CLAVE_SESION) === '1';
-/** Sesión compartida sin token general: los cambios no salen del navegador. */
-export const esDemo = () => sesionCompartida() && !TOKEN_GENERAL;
+/** Sesión de práctica abierta con «Practicar con la demostración» (sin usuario ni contraseña). */
+const sesionPractica = () => sessionStorage.getItem(CLAVE_SESION) === 'practica';
+/** Los cambios no salen del navegador: práctica, o usuario compartido sin token general. */
+export const esDemo = () => sesionPractica() || (sesionCompartida() && !TOKEN_GENERAL);
+/** Hay una sesión sin token personal (compartida o de práctica). */
+export const sesionSinToken = () => sesionCompartida() || sesionPractica();
 export const salirDemo = () => sessionStorage.removeItem(CLAVE_SESION);
-export const nombreDemo = TOKEN_GENERAL ? USUARIO : `${USUARIO} · demostración`;
+export const nombreDemo = () => (esDemo() ? 'Demostración' : USUARIO);
+
+/** Abre la demostración: se puede practicar sin usuario ni contraseña porque nada se publica. */
+export const entrarPractica = () => sessionStorage.setItem(CLAVE_SESION, 'practica');
 
 /** Comprueba el usuario y la contraseña compartidos y abre la sesión. */
 export async function entrarDemo(usuario: string, clave: string): Promise<boolean> {
@@ -204,7 +211,7 @@ export const adaptadorDemo: AxiosAdapter = async (cfg) => {
 
 	if (metodo === 'POST' && ruta === '/git/commits') {
 		const sha = id();
-		e.commits[sha] = { arbol: cuerpo.tree, padre: cuerpo.parents?.[0] ?? null, mensaje: cuerpo.message, autor: nombreDemo, fecha: new Date().toISOString() };
+		e.commits[sha] = { arbol: cuerpo.tree, padre: cuerpo.parents?.[0] ?? null, mensaje: cuerpo.message, autor: 'Demostración', fecha: new Date().toISOString() };
 		return responder(cfg, 201, { sha });
 	}
 
